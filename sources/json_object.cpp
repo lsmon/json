@@ -5,7 +5,15 @@
 namespace json {
     json_object::json_object(const json_object &obj)
     {
-        key_value = obj.key_value;
+        for (const auto& pair : obj.key_value) {
+            if (auto inner_obj = std::get_if<std::shared_ptr<json_object>>(&pair.second)) {
+                key_value[pair.first] = std::make_shared<json_object>(**inner_obj);
+            } else if (auto inner_arr = std::get_if<std::shared_ptr<json_array>>(&pair.second)) {
+                key_value[pair.first] = std::make_shared<json_array>(**inner_arr);
+            } else {
+                key_value[pair.first] = pair.second;
+            }
+        }
     }
 
     json_object::~json_object() {}
@@ -26,11 +34,11 @@ namespace json {
         key_value[key] = value;
     }
 
-    void json_object::put(const std::string& key, const json_object& value) {
+    void json_object::put(const std::string& key, const std::shared_ptr<json_object>& value) {
         key_value[key] = value;
     }
 
-    void json_object::put(const std::string& key, const json_array &value) {
+    void json_object::put(const std::string& key, const std::shared_ptr<json_array> &value) {
         key_value[key] = value;
     }
 
@@ -40,8 +48,7 @@ namespace json {
         auto it = key_value.find(key);
         if (it != key_value.end()) {
             try {
-                // return std::get<T>(it.second);
-                value = it->second;
+                value = std::get<T>(it->second);
             } catch (const std::bad_variant_access& ex) {
                 std::cerr << ex.what() << std::endl;
                 throw std::runtime_error("Type mismatch for key: " + key);
@@ -55,19 +62,19 @@ namespace json {
         ss << "{";
         size_t count = 0;
         for (const auto &pair : key_value) {
-            ss << pair.first << ":";
-            if (std::holds_alternative<int>(pair.second)) {
-                ss << std::get<int>(pair.second);
-            } else if (std::holds_alternative<double>(pair.second)) {
-                ss << std::get<double>(pair.second);
-            } else if (std::holds_alternative<bool>(pair.second)) {
-                ss << (std::get<bool>(pair.second)?"true":"false");
-            } else if (std::holds_alternative<std::string>(pair.second)) {
-                ss << std::get<std::string>(pair.second);
-            } else if (std::holds_alternative<json_object>(pair.second)) {
-                ss << std::get<json_object>(pair.second).to_json_string();
-            } else if (std::holds_alternative<json_array>(pair.second)) {
-                ss << std::get<json_array>(pair.second).to_json_string();
+            ss << "\"" << pair.first << "\": ";
+            if (auto str = std::get_if<std::string>(&pair.second)) {
+                ss << "\"" << *str << "\"";
+            } else if (auto integer = std::get_if<int>(&pair.second)) {
+                ss << *integer;
+            } else if (auto boolean = std::get_if<bool>(&pair.second)) {
+                ss << (*boolean ? "true" : "false");
+            } else if (auto floating = std::get_if<double>(&pair.second)) {
+                ss << *floating;
+            } else if (auto obj = std::get_if<std::shared_ptr<json_object>>(&pair.second)) {
+                ss << (*obj)->to_json_string();
+            } else if (auto arr = std::get_if<std::shared_ptr<json_array>>(&pair.second)) {
+                ss << (*arr)->to_json_string();
             } else {
                 ss << "null";
             }

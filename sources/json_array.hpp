@@ -12,11 +12,12 @@ namespace json {
     
     class json_array : public util {
     private:
-        std::vector<std::variant<int, bool, double, std::string, json_object, json_array>>  elements;
+        std::vector<std::variant<int, bool, double, std::string, std::shared_ptr<json_object>, std::shared_ptr<json_array>>>  elements;
 
     public:
         json_array() = default;
-        json_array(const json_array& array):elements(array.elements){}
+        
+        json_array(const json_array& array);
 
         ~json_array() = default;
 
@@ -28,9 +29,9 @@ namespace json {
 
         void add(const double& element);
 
-        void add(const json_object& element);
+        void add(const std::shared_ptr<json_object>& element);
 
-        void add(const json_array& element);
+        void add(const std::shared_ptr<json_array>& element);
 
         template <typename T>
         T get(size_t index) const;

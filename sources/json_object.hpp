@@ -12,7 +12,7 @@ namespace json {
      
     class json_object : public util {
     private:
-        std::unordered_map<std::string, std::variant<int, bool, double, std::string, json_object, json_array>> key_value;
+        std::unordered_map<std::string, std::variant<int, bool, double, std::string, std::shared_ptr<json_object>, std::shared_ptr<json_array>>> key_value;
 
     public:
         json_object() = default;
@@ -29,9 +29,9 @@ namespace json {
 
         void put(const std::string& key, double value);
 
-        void put(const std::string& key, const json_object& value);
+        void put(const std::string& key, const std::shared_ptr<json_object>& value);
 
-        void put(const std::string& key, const json_array& value);
+        void put(const std::string& key, const std::shared_ptr<json_array>& value);
 
         template <typename T>
         T get(const std::string& key) const;

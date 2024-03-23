@@ -2,6 +2,18 @@
 #include "json_array.hpp"
 
 namespace json {
+    json_array::json_array(const json_array &array)
+    {
+        for (const auto& element : array.elements) {
+            if (auto obj = std::get_if<std::shared_ptr<json_object>>(&element)) {
+                elements.push_back(std::make_shared<json_object>(**obj));
+            } else if (auto arr = std::get_if<std::shared_ptr<json_array>>(&element)) {
+                elements.push_back(std::make_shared<json_array>(**arr));
+            } else {
+                elements.push_back(element);
+            }
+        }
+    }
 
     void json_array::add(const std::string &element) {
         elements.push_back(std::move(element));
@@ -19,11 +31,11 @@ namespace json {
         elements.push_back(element);
     }
 
-    void json_array::add(const json_object& element) {
+    void json_array::add(const std::shared_ptr<json_object>& element) {
         elements.push_back(element);
     }
 
-    void json_array::add(const json_array &element){
+    void json_array::add(const std::shared_ptr<json_array>& element){
         elements.push_back(element);
     }
 
@@ -37,18 +49,18 @@ namespace json {
         ss << "[";
         size_t i = 0;
         for (auto &element : elements) {
-            if (std::holds_alternative<int>(element)) {
-                ss << std::get<int>(element);
-            } else if (std::holds_alternative<double>(element)) {
-                ss << std::get<double>(element);
-            } else if (std::holds_alternative<bool>(element)) {
-                ss << (std::get<bool>(element)?"true":"false");
-            } else if (std::holds_alternative<std::string>(element)) {
-                ss << std::get<std::string>(element);
-            } else if (std::holds_alternative<json_object>(element)) {
-                ss << std::get<json_object>(element).to_json_string();
-            } else if (std::holds_alternative<json_array>(element)) {
-                ss << std::get<json_array>(element).to_json_string();
+            if (auto str = std::get_if<std::string>(&element)) {
+                ss << *str;
+            } else if (auto integer = std::get_if<int>(&element)) {
+                ss << *integer;
+            } else if (auto boolean = std::get_if<bool>(&element)) {
+                ss << (*boolean ? "true" : "false");
+            } else if (auto floating = std::get_if<double>(&element)) {
+                ss << *floating;
+            } else if (auto obj = std::get_if<std::shared_ptr<json_object>>(&element)) {
+                ss << (*obj)->to_json_string();
+            } else if (auto arr = std::get_if<std::shared_ptr<json_array>>(&element)) {
+                ss << (*arr)->to_json_string();
             } else {
                 ss << "null";
             }

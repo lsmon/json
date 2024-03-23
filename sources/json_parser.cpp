@@ -25,9 +25,9 @@ namespace json {
                     std::vector<std::string_view> splits = split_string_view_by(jsonView, ',');
                     for(auto s : splits) {
                         if (s[0] == OCB) {
-                            jsonArray.add(parse_object(s));
+                            jsonArray.add(std::make_shared<json_object>(parse_object(s)));
                         } else if (s[0] == OSB) {
-                            jsonArray.add(parse_array(s));
+                            jsonArray.add(std::make_shared<json_array>(parse_array(s)));
                         } else {
                             std::string_view element = trim(s);
                             if (is_boolean(element)) {
@@ -75,9 +75,9 @@ namespace json {
                         std::string_view key = trim(obj.substr(0, obj.find_first_of(':')));
                         std::string_view value = trim(obj.substr(obj.find_first_of(':') + 1)); 
                         if (value[0] == OCB) {
-                            jsonObj.put(std::string(key), parse_object(value));
+                            jsonObj.put(std::string(key), std::make_shared<json_object>(parse_object(value)));
                         } else if (value[0] == OSB) {
-                            jsonObj.put(std::string(key), parse_array(value));
+                            jsonObj.put(std::string(key), std::make_shared<json_array>(parse_array(value)));
                         } else {
                             value = util::trim(value);
                             if (is_boolean(value)) {
