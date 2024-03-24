@@ -38,7 +38,6 @@ set(INC
         sources/json_object.hpp
         sources/json_array.hpp
         sources/json_util.hpp
-        # sources/json.hpp
         )
 
 set(SRC 
@@ -46,16 +45,24 @@ set(SRC
         sources/json_object.cpp
         sources/json_array.cpp
         sources/json_util.cpp
-        # sources/json.cpp
         )
 
 include_directories(include)
 include_directories(sources)
 
-add_executable(${PROJECT_NAME} main.cpp ${INC} ${SRC})
-target_include_directories(${PROJECT_NAME} PRIVATE sources)
+add_library(json-lib ${SRC})
+
+target_include_directories(${PROJECT_NAME}-lib PUBLIC include)
+
+add_executable(${PROJECT_NAME} main.cpp)
+# target_include_directories(${PROJECT_NAME} PRIVATE sources)
+target_link_libraries(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}-lib)
+
+
+add_executable(${PROJECT_NAME}_test tests/JsonTest.cpp)
+# target_include_directories(${PROJECT_NAME}_test PRIVATE sources)
+target_link_libraries(${PROJECT_NAME}_test PRIVATE ${PROJECT_NAME}-lib)
 
 enable_testing()
 
-add_executable(${PROJECT_NAME}_test tests/JsonTest.cpp ${INC} ${SRC})
-target_include_directories(${PROJECT_NAME}_test PRIVATE sources)
+add_test(NAME JSON-TEST COMMAND $<TARGET_FILE:json_test>)
