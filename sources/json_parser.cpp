@@ -105,4 +105,14 @@ namespace json {
         std::string_view stringView(jsonString);
         return util::validate(stringView);
     }
+
+    std::future<json_array> parser::async_parse_array(std::string_view jsonView)
+    {
+        return async_parse(parse_array, jsonView); // Utilize the async_parse helper function
+    }
+
+    std::future<json_object> parser::async_parse_object(std::string_view jsonView)
+    {
+        return async_parse(parse_object, jsonView); // Utilize the async_parse helper function
+    }
 }

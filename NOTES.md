@@ -1,5 +1,40 @@
 # Notes
 
+## std::string Basics
+
+While working with std::string, I encountered a lot of times that my code was leaking memory (correct term memory leak due to not de-allocating the memory that std::string was creating). Thanks to a youtuber 'theCherno' who dedicates his content to dev and he has a c++ series, I learned a lot about `std::string`, `std::move`, `std::async`, `std::future`, etc.
+So I started to apply what I learned about `std::string_view`.
+
+If I switch from using `std::string` to `std::string_view` for checking whether a value represented by a string is an integer, double, or boolean, a few key changes and considerations come into play:
+
+### Efficiency Gains
+
+
+
+8 **Performance Improvement:** `std::string_view` does not own the string data it points to; it merely provides a view into the data of some other string, like a `std::string` or a character array. This means that using `std::string_view` can avoid unnecessary copies and allocations, potentially improving performance, especially in scenarios where you're frequently creating and destroying temporary `std::string` objects for validation purposes.
+
+### Semantic Changes
+
+* **Constness:** Since `std::string_view` is non-owning and intended to offer a view into an existing string, it inherently treats the data it points to as immutable from its perspective. While you can't directly modify the data through the `std::string_view`, the underlying data could still be changed by others who own it, which might lead to dangling views if the original data is destroyed or reallocated.
+
+* **String Lifetime:** I need to ensure that the lifetime of the original string data outlasts the `std::string_view`. If the original data is modified or destroyed while a `string_view` pointing to it is still in use, this could lead to undefined behavior due to accessing invalid memory.
+
+### Modifications to the Validation Functions
+
+* The functions for checking integers, doubles, and booleans would work similarly with `std::string_view`, but I need to construct an `std::istringstream` from the `std::string_view`. This typically requires converting the `std::string_view` to a `std::string` first, as `std::istringstream` constructors do not accept `std::string_view` directly (as of my last update). This conversion step reintroduces a potential performance penalty, which somewhat negates the benefits of using `std::string_view` for these specific operations.
+
+### Adding Boolean Check
+
+To extend the capability to check for boolean values, I can simply compare the `std::string_view` (or `std::string`) directly to known boolean representations, like `"true"` and `"false"`:
+
+```cpp
+bool isBoolean(const std::string_view str) {
+    return str == "true" || str == "false";
+}
+```
+
+"__To Remember__", when using `std::string_view` over `std::string`, the main benefit lies in avoiding copies for read-only operations. However, in contexts where I need to manipulate strings or rely on behaviors specific to `std::string` (such as automatic memory management or compatibility with certain library functions), the advantages might be outweighed by these considerations.
+
 ## Key value pairing
 
 To support the developmnet of this project I have to learn to use `std::unordered_map` which is a hash map provided by STL (c++ standard library).
@@ -172,3 +207,43 @@ Based on my code and considering factors such as ease of use, performance, and m
 * Use values for individual elements stored within the containers for simplicity and efficiency.
 
 By following these choices, I believe I can create a JSON library that strikes a balance between ease of use, performance, and memory management, providing users with a convenient and efficient way to work with JSON data.
+
+## Learning about multthreading the modern way
+
+Using `std::async` and `std::future` might help expedite parsing time if I am have multiple JSON strings to parse concurrently. However, it's essential to use them judiciously, considering the overhead they introduce and whether the parsing workload can benefit from parallelism.
+
+```c++
+// Helper function for asynchronous parsing
+template<typename Function, typename... Args>
+static auto async_parse(Function&& f, Args&&... args) {
+    return std::async(std::launch::async, std::forward<Function>(f), std::forward<Args>(args)...);
+}
+```
+
+The helper function `async_parse` can be used to complement the asynchronous parsing by utilizing it to simplify the process of creating asynchronous tasks.
+
+* The `async_parse` helper function access tallable `f` and its arguments `args` and forwards them to `std::async` to create asynchronous tasks.
+
+```c++
+// Helper function for asynchronous parsing
+template<typename Function, typename... Args>
+static auto async_parse(Function&& f, Args&&... args) {
+    return std::async(std::launch::async, std::forward<Function>(f), std::forward<Args>(args)...);
+}
+```
+
+* `async_parse_array` and `async_parse_object` now utilize `async_parse` to create asynchronous tasks to parse arrays and objects.
+
+```c++
+static std::future<json_array> async_parse_array(std::string_view jsonView) {
+    return async_parse(parse_array, jsonView); // Utilize the async_parse helper function
+}
+
+static std::future<json_object> async_parse_object(std::string_view jsonView) {
+    return async_parse(parse_object, jsonView); // Utilize the async_parse helper function
+}
+```
+
+* By using `async_parse` the creation of asynchronous parsing functions is simplyfied, making the code look cleaner and readable. (I think that's the case for now)
+
+This integration ensures that the asynchronous parsing functions remain concistent and maintainable while leveraging the helper function for asynchronous task creation.
