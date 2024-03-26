@@ -22,12 +22,6 @@ int main() {
     return 0;
 }
 
-/* 
-int main() {
-
-    return 0;
-}
- */
 void testSimpleJsonString() {
     std::cout << "TESTING SIMPLE JSON STRING PARSING" << std::endl;
     std::string jsonString = R"( {"name": "John Doe", "city": "New York"} )";
