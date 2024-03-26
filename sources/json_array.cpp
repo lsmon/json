@@ -19,6 +19,11 @@ namespace json {
         elements.push_back(std::move(element));
     }
 
+    void json_array::add(const char *element)
+    {
+            elements.push_back(std::move(std::string(element)));
+    }
+
     void json_array::add(const int &element) {
         elements.push_back(element);
     }
@@ -50,7 +55,7 @@ namespace json {
         size_t i = 0;
         for (auto &element : elements) {
             if (auto str = std::get_if<std::string>(&element)) {
-                ss << *str;
+                ss << "\"" << *str << "\"";
             } else if (auto integer = std::get_if<int>(&element)) {
                 ss << *integer;
             } else if (auto boolean = std::get_if<bool>(&element)) {

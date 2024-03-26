@@ -19,6 +19,11 @@ int main() {
     testSimpleJsonArray();
     testJsonArrayOfJsonObjects();
     testAsyncParser();
+
+    json::json_object* json = new json::json_object();
+    json->put("a", "n");
+    std::cout << json->to_json_string() << std::endl;
+    delete json;
     return 0;
 }
 

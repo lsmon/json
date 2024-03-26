@@ -22,6 +22,11 @@ namespace json {
         key_value[key] = std::move(value);
     }
 
+    void json_object::put(const std::string &key, const char *value)
+    {
+        key_value[key] = std::move(std::string(value));
+    }
+
     void json_object::put(const std::string& key, bool value) {
         key_value[key] = value;
     }

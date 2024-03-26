@@ -23,6 +23,8 @@ namespace json {
 
         void add(const std::string& element);
 
+        void add(const char* element);
+
         void add(const int& element);
 
         void add(const bool& element);

@@ -23,6 +23,8 @@ namespace json {
 
         void put(const std::string& key, const std::string& value);
 
+        void put(const std::string& key, const char* value);
+
         void put(const std::string& key, bool value);
 
         void put(const std::string& key, int value);
