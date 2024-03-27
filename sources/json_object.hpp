@@ -3,6 +3,7 @@
 
 #include <unordered_map>
 #include <variant>
+#include <memory>
 #include "json_array.hpp"
 #include "json_util.hpp"
 #include "json_parser.hpp"

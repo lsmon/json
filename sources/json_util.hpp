@@ -2,6 +2,8 @@
 #define JSON_UTIL_HPP
 
 #include <string>
+#include <string_view>
+
 
 namespace json {
     const int OCB = 123; // OPEN CURLY BRACE '{' 
@@ -42,8 +44,6 @@ namespace json {
         static int to_integer(std::string_view value);
 
         static double to_double(std::string_view value);
-
-        
 
     };
 }

@@ -6,6 +6,7 @@
 #include <vector>
 #include <charconv>
 #include <stack>
+#include <memory>
 #include "json_object.hpp"
 #include "json_array.hpp"
 
