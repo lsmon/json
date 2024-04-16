@@ -16,7 +16,32 @@ namespace json {
         }
     }
 
+    json_object::json_object(const std::string &jsonString)
+    {
+        auto parsed = parser::parse(jsonString);
+        if (parsed) {
+            auto obj = dynamic_cast<json_object*>(parsed.get());
+            if (obj) {
+                *this = std::move(*obj);
+            } else {
+                throw std::runtime_error("Parsed string is not a json_object");
+            }
+        } else {
+            throw std::runtime_error("JSON String parsing failed.");
+        }
+    }
+
     json_object::~json_object() {}
+
+    std::unordered_set<std::string> json_object::keys() const
+    {
+        std::unordered_set<std::string> keys;
+        keys.reserve(key_value.size());
+        for (const auto pair : key_value) {
+            keys.emplace(pair.first);
+        }
+        return keys;
+    }
 
     void json_object::put(const std::string& key, const std::string& value) {
         key_value[key] = std::move(value);
@@ -48,18 +73,18 @@ namespace json {
     }
 
     template<typename T>
-    inline T json_object::get(const std::string & key) const {
-        T value;
+    T json_object::get(const std::string & key) const {
         auto it = key_value.find(key);
         if (it != key_value.end()) {
             try {
-                value = std::get<T>(it->second);
+                return std::get<T>(it->second);
             } catch (const std::bad_variant_access& ex) {
                 std::cerr << ex.what() << std::endl;
                 throw std::runtime_error("Type mismatch for key: " + key);
             }
+        } else {
+            throw std::out_of_range("Key not found");
         }
-        return value;
     }
 
     std::string json_object::to_json_string() const {

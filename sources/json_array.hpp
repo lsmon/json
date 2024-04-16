@@ -19,7 +19,11 @@ namespace json {
         
         json_array(const json_array& array);
 
+        json_array(const std::string& jsonString);
+
         ~json_array() = default;
+
+        size_t size() const;
 
         void add(const std::string& element);
 

@@ -50,7 +50,7 @@ set(SRC
 include_directories(include)
 include_directories(sources)
 
-add_library(json-lib ${SRC})
+add_library(${PROJECT_NAME}-lib ${SRC})
 
 target_include_directories(${PROJECT_NAME}-lib PUBLIC include)
 
@@ -65,4 +65,4 @@ target_link_libraries(${PROJECT_NAME}_test PRIVATE ${PROJECT_NAME}-lib)
 
 enable_testing()
 
-add_test(NAME JSON-TEST COMMAND $<TARGET_FILE:json_test>)
+add_test(JSON_TEST json_test COMMAND json_test)

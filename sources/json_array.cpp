@@ -1,5 +1,6 @@
 #include <sstream>
 #include "json_array.hpp"
+#include "json_parser.hpp"
 
 namespace json {
     json_array::json_array(const json_array &array)
@@ -15,7 +16,28 @@ namespace json {
         }
     }
 
-    void json_array::add(const std::string &element) {
+    json_array::json_array(const std::string &jsonString)
+    {
+        auto parsed = parser::parse(jsonString);
+        if (parsed) {
+            auto arr = dynamic_cast<json_array*>(parsed.get());
+            if (arr) {
+                *this = std::move(*arr);
+            } else {
+                throw std::runtime_error("Parsed string is not a json_array");
+            }
+        } else {
+            throw std::runtime_error("JSON String parsing failed.");
+        }
+    }
+
+    size_t json_array::size() const
+    {
+        return elements.size();
+    }
+
+    void json_array::add(const std::string &element)
+    {
         elements.push_back(std::move(element));
     }
 
@@ -45,7 +67,7 @@ namespace json {
     }
 
     template <typename T>
-    inline T json_array::get(size_t index) const {
+    T json_array::get(size_t index) const {
         return elements.at(index);
     }
 

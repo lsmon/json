@@ -20,7 +20,11 @@ namespace json {
 
         json_object(const json_object& obj);
 
+        json_object(const std::string& jsonString);
+
         ~json_object();
+
+        std::unordered_set<std::string> keys() const;
 
         void put(const std::string& key, const std::string& value);
 
