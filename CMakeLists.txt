@@ -37,6 +37,7 @@ set(INC
         sources/json_parser.hpp
         sources/json_object.hpp
         sources/json_array.hpp
+        sources/json_value.hpp
         sources/json_util.hpp
         )
 
@@ -44,8 +45,9 @@ set(SRC
         sources/json_parser.cpp
         sources/json_object.cpp
         sources/json_array.cpp
+        sources/json_value.cpp
         sources/json_util.cpp
-        )
+        sources/json_value.cpp)
 
 include_directories(include)
 include_directories(sources)
@@ -65,4 +67,4 @@ target_link_libraries(${PROJECT_NAME}_test PRIVATE ${PROJECT_NAME}-lib)
 
 enable_testing()
 
-add_test(JSON_TEST json_test COMMAND json_test)
+include(tests/CMakeLists.txt)
