@@ -4,22 +4,23 @@
 #include <string>
 #include <string_view>
 
-
-namespace json {
-    const int OCB = 123; // OPEN CURLY BRACE '{' 
+namespace json
+{
+    const int OCB = 123; // OPEN CURLY BRACE '{'
     const int CCB = 125; // CLOSE CURLY BRACE '}'
-    const int OSB = 91; // OEPN SQUARE BRACKET '['
-    const int CSB = 93; // CLOSE SQUARE BRACLET ']'
-    const int OP = 40; // OPEN PARENTHESIS '('
-    const int CP = 41; // CLOSE PARENTHESIS ')'
+    const int OSB = 91;  // OEPN SQUARE BRACKET '['
+    const int CSB = 93;  // CLOSE SQUARE BRACLET ']'
+    const int OP = 40;   // OPEN PARENTHESIS '('
+    const int CP = 41;   // CLOSE PARENTHESIS ')'
 
-    class util {
+    class util
+    {
     public:
         virtual ~util();
-        
+
         virtual std::string to_json_string() const = 0;
 
-        static std::unique_ptr<util> parse(const std::string& json);
+        static std::unique_ptr<util> parse(const std::string &json);
 
         static bool validate(const std::string_view jsonString);
 
@@ -38,13 +39,12 @@ namespace json {
         static bool is_double(std::string_view str);
 
         static bool is_boolean(std::string_view str);
-        
+
         static std::string_view trim(std::string_view sv);
 
         static int to_integer(std::string_view value);
 
         static double to_double(std::string_view value);
-
     };
 }
 #endif
