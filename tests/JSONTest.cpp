@@ -1,6 +1,6 @@
 #include <iostream>
-#include "json_parser.hpp"
-#include "json_object.hpp"
+#include "JSONParser.hpp"
+#include "JSONObject.hpp"
 #include <unordered_map>
 #include <string_view>
 
@@ -10,32 +10,32 @@ void testSimpleJsonString()
     std::string jsonString = R"( {"name": "John Doe", "city": "New York"} )";
     // json::json_object json = json::parser::parse_object(jsonString);
     // std::cout << json.to_json_string() << std::endl;
-    auto jsonObj = json::util::parse(jsonString);
-    std::cout << jsonObj->to_json_string() << std::endl;
+    auto jsonObj = json::Util::parse(jsonString);
+    std::cout << jsonObj->toJSONString() << std::endl;
 }
 
 void testNestedSimpleString()
 {
     std::cout << "TESTING NESTED JSON STRING PARSING" << std::endl;
     std::string jsonString = R"( {"name": "John Doe", "city_state": {"city":"New York", "state":"NY"}} )";
-    auto jsonObj = json::util::parse(jsonString);
-    std::cout << jsonObj->to_json_string() << std::endl;
+    auto jsonObj = json::Util::parse(jsonString);
+    std::cout << jsonObj->toJSONString() << std::endl;
 }
 
 void testSimpleJsonArray()
 {
     std::cout << "TESTING SIMPLE JSON ARRAY STRING PARSING" << std::endl;
     std::string jsonString = R"( ["name", 1, 3.14, false] )";
-    auto json = json::util::parse(jsonString);
-    std::cout << json->to_json_string() << std::endl;
+    auto json = json::Util::parse(jsonString);
+    std::cout << json->toJSONString() << std::endl;
 }
 
 void testJsonArrayOfJsonObjects()
 {
     std::cout << "TESTING SIMPLE JSON ARRAY STRING PARSING" << std::endl;
     std::string jsonString = R"( [{"name":"John"}, {"age":1}, {"pi": 3.14}, {"truth":false}] )";
-    auto json = json::util::parse(jsonString);
-    std::cout << json->to_json_string() << std::endl;
+    auto json = json::Util::parse(jsonString);
+    std::cout << json->toJSONString() << std::endl;
 }
 
 void testAsyncParser()
@@ -46,33 +46,33 @@ void testAsyncParser()
     std::string jsonStr1 = "[1, 2, 3]";
     std::string jsonStr2 = "{\"key\": \"value\"}";
 
-    auto future1 = json::parser::async_parse(&json::parser::parse_array, jsonStr1);
-    auto future2 = json::parser::async_parse(&json::parser::parse_object, jsonStr2);
+    auto future1 = json::Parser::asyncParse(&json::Parser::parseArray, jsonStr1);
+    auto future2 = json::Parser::asyncParse(&json::Parser::parseObject, jsonStr2);
 
     // Wait for the results
     auto jsonArray = future1.get();
     auto jsonObject = future2.get();
 
-    std::cout << jsonArray.to_json_string() << std::endl;
-    std::cout << jsonObject.to_json_string() << std::endl;
+    std::cout << jsonArray.toJSONString() << std::endl;
+    std::cout << jsonObject.toJSONString() << std::endl;
 }
 
 void testJsonObjectBasicOp()
 {
     std::cout << "TESTING JSON OBJECT BASIC OPERATIONS" << std::endl;
-    json::json_object *json = new json::json_object();
+    json::JSONObject *json = new json::JSONObject();
     json->put("a", "n");
-    std::cout << json->to_json_string() << std::endl;
+    std::cout << json->toJSONString() << std::endl;
     delete json;
 }
 
 void testJsonArrayBasicOp()
 {
     std::cout << "TESTING JSON ARRAY BASIC OPERATIONS" << std::endl;
-    json::json_array *json = new json::json_array();
+    json::JSONArray *json = new json::JSONArray();
     json->add("a");
     json->add("n");
-    std::cout << json->to_json_string() << std::endl;
+    std::cout << json->toJSONString() << std::endl;
     delete json;
 }
 
@@ -80,8 +80,8 @@ void testCreateJsonObjectFromString()
 {
     std::cout << "TESTING JSON OBJECT FROM STRING" << std::endl;
     std::string jsonString = R"( {"name": "John Doe", "city_state": {"city":"New York", "state":"NY"}} )";
-    json::json_object json = json::json_object(jsonString);
-    std::cout << json.to_json_string() << std::endl;
+    json::JSONObject json = json::JSONObject(jsonString);
+    std::cout << json.toJSONString() << std::endl;
     for (const auto key : json.keys())
     {
         auto value = json[key];
@@ -93,8 +93,8 @@ void testCreateJsonArrayFromString()
 {
     std::cout << "TESTING JSON ARRAY FROM STRING" << std::endl;
     std::string jsonString = R"( ["name", 1, 3.14, false] )";
-    json::json_array json = json::json_array(jsonString);
-    std::cout << json.to_json_string() << std::endl;
+    json::JSONArray json = json::JSONArray(jsonString);
+    std::cout << json.toJSONString() << std::endl;
     for (size_t i = 0; i < json.size(); i++)
     {
         //     auto value = json.get<std::string>(i);

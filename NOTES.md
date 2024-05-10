@@ -50,22 +50,22 @@ The key value pairing is pretty straight forward for keys since they are always 
 * __json arrays__: a JSON array that can be represented as the value of specific key.
 
 ```c++
-std::variant<int, double, std::string, json_object, json_array>
+std::variant<int, double, std::string, JSONObject, JSONArray>
 ```
 
 ## Performance
 
 At the begining of writing this project I felt that it was well structured. However with time and re reading my code I did some research on how to improve it's performance.
 
-1. I was making __unnecesary copies__: In my `json_object` and `json_array` classes, when passing elements to the `put` or `add` functions, I was making __unnecessary copies__ of the objects.
+1. I was making __unnecesary copies__: In my `JSONObject` and `JSONArray` classes, when passing elements to the `put` or `add` functions, I was making __unnecessary copies__ of the objects.
 cpp
 
 ```c++
-void json_object::put(const std::string& key, const std::string& value) {
+void JSONObject::put(const std::string& key, const std::string& value) {
     key_value[key] = value;  // Instead of copying, move it
 }
 
-void json_array::add(const std::string &element) {
+void JSONArray::add(const std::string &element) {
     elements.push_back(element);  // Instead of copying, move it
 }
 ```
@@ -73,18 +73,18 @@ void json_array::add(const std::string &element) {
 Instead, you can use move semantics to avoid these copies. For example:
 
 ```c++
-void json_object::put(const std::string& key, const std::string& value) {
+void JSONObject::put(const std::string& key, const std::string& value) {
     key_value[key] = std::move(value);
 }
 
-void json_array::add(const std::string &element) {
+void JSONArray::add(const std::string &element) {
     elements.push_back(std::move(element));
 }
 ```
 
 ## Memory management
 
-Since the `json_object` and `json_array` classes don't directly manage any dynamic resources like pointers, there's no need to explicitly deallocate any resources in their destructors. The default destructors provided by the compiler will handle the cleanup of member variables automatically when an object of these classes goes out of scope. So there's no need to have default destructor on each class. However, I ended up debating myself if the use of pointers as containers for the JSON object/array (`std::variant<int, bool, double, std::string, json_object, json_array>>* key_value;` `std::vector<std::variant<int, bool, double, std::string, json_object, json_array>> * elements;`) will it be beneficial? What I found is that:
+Since the `JSONObject` and `JSONArray` classes don't directly manage any dynamic resources like pointers, there's no need to explicitly deallocate any resources in their destructors. The default destructors provided by the compiler will handle the cleanup of member variables automatically when an object of these classes goes out of scope. So there's no need to have default destructor on each class. However, I ended up debating myself if the use of pointers as containers for the JSON object/array (`std::variant<int, bool, double, std::string, JSONObject, JSONArray>>* key_value;` `std::vector<std::variant<int, bool, double, std::string, JSONObject, JSONArray>> * elements;`) will it be beneficial? What I found is that:
 
 > If I declare the private members `key_value` and `elements` as `pointers`, then I'll need to manage the memory allocation and deallocation manually. This means the implementation of custom constructors, destructors, copy constructors, and copy assignment operators to ensure proper memory management.
 
@@ -126,13 +126,13 @@ Always consider the specific requirements and trade-offs of your application bef
 
 In the context of my project, using references for class members (`key_value`, `elements`) can be a bit different.
 
-### For json_object Class
+### For JSONObject Class
 
-* *__key_value__*: This member represents the key-value pairs in my JSON object. Since the size of the map may vary, and dynamic memory management might not be necessary, using a reference (`std::unordered_map<std::string, std::variant<int, bool, double, std::string, json_object, json_array>>&`) would be a suitable choice. References provide simplicity and safety and avoid unnecessary overhead associated with pointers.
+* *__key_value__*: This member represents the key-value pairs in my JSON object. Since the size of the map may vary, and dynamic memory management might not be necessary, using a reference (`std::unordered_map<std::string, std::variant<int, bool, double, std::string, JSONObject, JSONArray>>&`) would be a suitable choice. References provide simplicity and safety and avoid unnecessary overhead associated with pointers.
 
-### For json_array Class:
+### For JSONArray Class:
 
-* *__elements__: This member stores the elements of your JSON array. Similar to key_value, using a reference (`std::vector<std::variant<int, bool, double, std::string, json_object, json_array>>&`) would be appropriate if the size of the array is known at construction and dynamic memory management isn't needed.
+* *__elements__: This member stores the elements of your JSON array. Similar to key_value, using a reference (`std::vector<std::variant<int, bool, double, std::string, JSONObject, JSONArray>>&`) would be appropriate if the size of the array is known at construction and dynamic memory management isn't needed.
 
 > Overall, in my JSON classes, using references for class members would likely be beneficial due to their simplicity, safety, and avoidance of unnecessary dynamic memory overhead.
 > However, if my design requires dynamic memory management or deferred initialization of members, you may consider using pointers (possibly smart pointers like std::unique_ptr or std::shared_ptr) instead.
@@ -188,7 +188,7 @@ Since I am new to the topic of smart pointers I did some research and I hope hav
 Based on my code and considering factors such as ease of use, performance, and memory management, here are some choices I have made:
 
 1. *__For JSON Object and JSON Array Containers__*:
-   * It's beneficial to use smart pointers (`std::shared_ptr`) for managing objects like `json_object` and `json_array` within the container types (`std::unordered_map` and `std::vector`).
+   * It's beneficial to use smart pointers (`std::shared_ptr`) for managing objects like `JSONObject` and `JSONArray` within the container types (`std::unordered_map` and `std::vector`).
    * Smart pointers offer automatic memory management with shared ownership semantics, ensuring that objects are properly deallocated when they are no longer needed.
    * This approach simplifies memory management for users and reduces the risk of memory leaks or premature deallocation.
 
@@ -202,7 +202,7 @@ Based on my code and considering factors such as ease of use, performance, and m
 
 ### Here's a summary of my choicess
 
-* Use smart pointers (`std::shared_ptr`) for managing `json_object` and `json_array` instances within container types (`std::unordered_map` and `std::vector`).
+* Use smart pointers (`std::shared_ptr`) for managing `JSONObject` and `JSONArray` instances within container types (`std::unordered_map` and `std::vector`).
 * Use references (`&`) for accessing container objects (`std::unordered_map` and `std::vector`) to avoid unnecessary copying and ensure efficient access.
 * Use values for individual elements stored within the containers for simplicity and efficiency.
 
@@ -215,35 +215,35 @@ Using `std::async` and `std::future` might help expedite parsing time if I am ha
 ```c++
 // Helper function for asynchronous parsing
 template<typename Function, typename... Args>
-static auto async_parse(Function&& f, Args&&... args) {
+static auto asyncParse(Function&& f, Args&&... args) {
     return std::async(std::launch::async, std::forward<Function>(f), std::forward<Args>(args)...);
 }
 ```
 
-The helper function `async_parse` can be used to complement the asynchronous parsing by utilizing it to simplify the process of creating asynchronous tasks.
+The helper function `asyncParse` can be used to complement the asynchronous parsing by utilizing it to simplify the process of creating asynchronous tasks.
 
-* The `async_parse` helper function access tallable `f` and its arguments `args` and forwards them to `std::async` to create asynchronous tasks.
+* The `asyncParse` helper function access tallable `f` and its arguments `args` and forwards them to `std::async` to create asynchronous tasks.
 
 ```c++
 // Helper function for asynchronous parsing
 template<typename Function, typename... Args>
-static auto async_parse(Function&& f, Args&&... args) {
+static auto asyncParse(Function&& f, Args&&... args) {
     return std::async(std::launch::async, std::forward<Function>(f), std::forward<Args>(args)...);
 }
 ```
 
-* `async_parse_array` and `async_parse_object` now utilize `async_parse` to create asynchronous tasks to parse arrays and objects.
+* `asyncParseArray` and `asyncParseObject` now utilize `asyncParse` to create asynchronous tasks to parse arrays and objects.
 
 ```c++
-static std::future<json_array> async_parse_array(std::string_view jsonView) {
-    return async_parse(parse_array, jsonView); // Utilize the async_parse helper function
+static std::future<JSONArray> asyncParseArray(std::string_view jsonView) {
+    return async_parse(parseArray, jsonView); // Utilize the asyncParse helper function
 }
 
-static std::future<json_object> async_parse_object(std::string_view jsonView) {
-    return async_parse(parse_object, jsonView); // Utilize the async_parse helper function
+static std::future<JSONObject> asyncParseObject(std::string_view jsonView) {
+    return async_parse(parseObject, jsonView); // Utilize the asyncParse helper function
 }
 ```
 
-* By using `async_parse` the creation of asynchronous parsing functions is simplyfied, making the code look cleaner and readable. (I think that's the case for now)
+* By using `asyncParse` the creation of asynchronous parsing functions is simplyfied, making the code look cleaner and readable. (I think that's the case for now)
 
 This integration ensures that the asynchronous parsing functions remain concistent and maintainable while leveraging the helper function for asynchronous task creation.

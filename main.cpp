@@ -1,9 +1,9 @@
 #include <iostream>
-#include "json_parser.hpp"
+#include "JSONParser.hpp"
 
 
-json::json_object obj;
-json::json_array arr;
+json::JSONObject obj;
+json::JSONArray arr;
 
 void createJsonObject() {
     obj.put("name", "John");
@@ -23,8 +23,8 @@ int main(int argc, char* argv[]) {
     createJsonObject();
     createJsonArray();
 
-    std::cout << obj.to_json_string() << std::endl;
-    std::cout << arr.to_json_string() << std::endl;
+    std::cout << obj.toJSONString() << std::endl;
+    std::cout << arr.toJSONString() << std::endl;
 
     // std::string strVal = obj.get<std::string>("name");
     // std::cout << strVal << std::endl;

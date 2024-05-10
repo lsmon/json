@@ -13,38 +13,38 @@ namespace json
     const int OP = 40;   // OPEN PARENTHESIS '('
     const int CP = 41;   // CLOSE PARENTHESIS ')'
 
-    class util
+    class Util
     {
     public:
-        virtual ~util();
+        virtual ~Util();
 
-        virtual std::string to_json_string() const = 0;
+        virtual std::string toJSONString() const = 0;
 
-        static std::unique_ptr<util> parse(const std::string &json);
+        static std::unique_ptr<Util> parse(const std::string &json);
 
         static bool validate(const std::string_view jsonString);
 
-        static std::string_view strip_curly_braces(std::string_view jsonView);
+        static std::string_view stripCurlyBraces(std::string_view jsonView);
 
-        static std::string_view strip_square_brackets(std::string_view jsonView);
+        static std::string_view stripSquareBrackets(std::string_view jsonView);
 
         /// @brief Splits a string using the character delimiter. It will return a list with the each indivual string splitted.
         /// @param strView the string to split.
         /// @param delim the delimiter character.
         /// @return list of strings splitted based on the delimiter character.
-        static std::vector<std::string_view> split_string_view_by(std::string_view strView, char delim);
+        static std::vector<std::string_view> splitStringViewBy(std::string_view strView, char delim);
 
-        static bool is_integer(std::string_view str);
+        static bool isInteger(std::string_view str);
 
-        static bool is_double(std::string_view str);
+        static bool isDouble(std::string_view str);
 
-        static bool is_boolean(std::string_view str);
+        static bool isBoolean(std::string_view str);
 
         static std::string_view trim(std::string_view sv);
 
-        static int to_integer(std::string_view value);
+        static int toInteger(std::string_view value);
 
-        static double to_double(std::string_view value);
+        static double toDouble(std::string_view value);
     };
 }
 #endif

@@ -33,21 +33,21 @@ set(PROJECT_VERSION_PATCH 0)
 
 set(PROJECT_VERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_TWEAK}.${PROJECT_VERSION_PATCH})
 
-set(INC 
-        sources/json_parser.hpp
-        sources/json_object.hpp
-        sources/json_array.hpp
-        sources/json_value.hpp
-        sources/json_util.hpp
+set(INC
+        include/JSONParser.hpp
+        include/JSONObject.hpp
+        include/JSONArray.hpp
+        include/JSONValue.hpp
+        include/JSONUtil.hpp
         )
 
-set(SRC 
-        sources/json_parser.cpp
-        sources/json_object.cpp
-        sources/json_array.cpp
-        sources/json_value.cpp
-        sources/json_util.cpp
-        sources/json_value.cpp)
+set(SRC
+        sources/JSONParser.cpp
+        sources/JSONObject.cpp
+        sources/JSONArray.cpp
+        sources/JSONValue.cpp
+        sources/JSONUtil.cpp
+        sources/JSONValue.cpp)
 
 include_directories(include)
 include_directories(sources)
@@ -61,7 +61,7 @@ add_executable(${PROJECT_NAME} main.cpp)
 target_link_libraries(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}-lib)
 
 
-add_executable(${PROJECT_NAME}_test tests/JsonTest.cpp)
+add_executable(${PROJECT_NAME}_test tests/JSONTest.cpp)
 # target_include_directories(${PROJECT_NAME}_test PRIVATE sources)
 target_link_libraries(${PROJECT_NAME}_test PRIVATE ${PROJECT_NAME}-lib)
 

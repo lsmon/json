@@ -1,21 +1,21 @@
 #include <sstream>
 #include <iostream>
 #include <variant>
-#include "json_object.hpp"
+#include "JSONObject.hpp"
 
 namespace json
 {
-    json_object::json_object(const json_object &obj)
+    JSONObject::JSONObject(const JSONObject &obj)
     {
         for (const auto &pair : obj.key_value)
         {
-            if (auto inner_obj = std::get_if<std::shared_ptr<json_object>>(&pair.second.getRecord()))
+            if (auto inner_obj = std::get_if<std::shared_ptr<JSONObject>>(&pair.second.getRecord()))
             {
-                key_value[pair.first].setRecord(std::make_shared<json_object>(**inner_obj));
+                key_value[pair.first].setRecord(std::make_shared<JSONObject>(**inner_obj));
             }
-            else if (auto inner_arr = std::get_if<std::shared_ptr<json_array>>(&pair.second.getRecord()))
+            else if (auto inner_arr = std::get_if<std::shared_ptr<JSONArray>>(&pair.second.getRecord()))
             {
-                key_value[pair.first].setRecord(std::make_shared<json_array>(**inner_arr));
+                key_value[pair.first].setRecord(std::make_shared<JSONArray>(**inner_arr));
             }
             else
             {
@@ -24,12 +24,12 @@ namespace json
         }
     }
 
-    json_object::json_object(const std::string &jsonString)
+    JSONObject::JSONObject(const std::string &jsonString)
     {
-        auto parsed = parser::parse(jsonString);
+        auto parsed = Parser::parse(jsonString);
         if (parsed)
         {
-            auto obj = dynamic_cast<json_object *>(parsed.get());
+            auto obj = dynamic_cast<JSONObject *>(parsed.get());
             if (obj)
             {
                 *this = std::move(*obj);
@@ -45,9 +45,9 @@ namespace json
         }
     }
 
-    json_object::~json_object() {}
+    JSONObject::~JSONObject() {}
 
-    std::unordered_set<std::string> json_object::keys() const
+    std::unordered_set<std::string> JSONObject::keys() const
     {
         std::unordered_set<std::string> keys;
         keys.reserve(key_value.size());
@@ -58,43 +58,43 @@ namespace json
         return keys;
     }
 
-    void json_object::put(const std::string &key, const std::string &value)
+    void JSONObject::put(const std::string &key, const std::string &value)
     {
         key_value[key].setRecord(value);
     }
 
-    void json_object::put(const std::string &key, const char *value)
+    void JSONObject::put(const std::string &key, const char *value)
     {
         key_value[key].setRecord(std::string(value));
     }
 
-    void json_object::put(const std::string &key, bool value)
+    void JSONObject::put(const std::string &key, bool value)
     {
         key_value[key].setRecord(value);
     }
 
-    void json_object::put(const std::string &key, int value)
+    void JSONObject::put(const std::string &key, int value)
     {
         key_value[key].setRecord(value);
     }
 
-    void json_object::put(const std::string &key, double value)
+    void JSONObject::put(const std::string &key, double value)
     {
         key_value[key].setRecord(value);
     }
 
-    void json_object::put(const std::string &key, const std::shared_ptr<json_object> &value)
+    void JSONObject::put(const std::string &key, const std::shared_ptr<JSONObject> &value)
     {
         key_value[key].setRecord(value);
     }
 
-    void json_object::put(const std::string &key, const std::shared_ptr<json_array> &value)
+    void JSONObject::put(const std::string &key, const std::shared_ptr<JSONArray> &value)
     {
         key_value[key].setRecord(value);
     }
 
     template <typename T>
-    T json_object::get(const std::string &key) const
+    T JSONObject::get(const std::string &key) const
     {
         auto it = key_value.find(key);
         if (it != key_value.end())
@@ -115,7 +115,7 @@ namespace json
         }
     }
 
-    std::string json_object::to_json_string() const
+    std::string JSONObject::toJSONString() const
     {
         std::stringstream ss;
         ss << "{";
@@ -139,13 +139,13 @@ namespace json
             {
                 ss << *floating;
             }
-            else if (auto obj = std::get_if<std::shared_ptr<json_object>>(&pair.second.getRecord()))
+            else if (auto obj = std::get_if<std::shared_ptr<JSONObject>>(&pair.second.getRecord()))
             {
-                ss << (*obj)->to_json_string();
+                ss << (*obj)->toJSONString();
             }
-            else if (auto arr = std::get_if<std::shared_ptr<json_array>>(&pair.second.getRecord()))
+            else if (auto arr = std::get_if<std::shared_ptr<JSONArray>>(&pair.second.getRecord()))
             {
-                ss << (*arr)->to_json_string();
+                ss << (*arr)->toJSONString();
             }
             else
             {
@@ -161,19 +161,14 @@ namespace json
         return ss.str();
     }
 
-    json_value &json_object::operator[](const std::string &key)
+    JSONValue &JSONObject::operator[](const std::string &key)
     {
-        static json_value empty_obj;
+        static JSONValue empty_obj;
         auto it = key_value.find(key);
         if (it != key_value.end())
         {
             return it->second;
         }
         return empty_obj;
-    }
-
-    bool json_object::is_array(const std::basic_string<char> basicString)
-    {
-        return false;
     }
 }

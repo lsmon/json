@@ -1,4 +1,4 @@
-#include "json_util.hpp"
+#include "JSONUtil.hpp"
 #include <string_view>
 #include <sstream>
 #include <cctype>
@@ -7,10 +7,10 @@
 #include <charconv>
 #include <stack>
 #include <memory>
-#include "json_object.hpp"
-#include "json_array.hpp"
+#include "JSONObject.hpp"
+#include "JSONArray.hpp"
 
-bool json::util::validate(const std::string_view jsonString)
+bool json::Util::validate(const std::string_view jsonString)
 {
     std::stack<char> brackets;
     for (auto c : jsonString)
@@ -47,28 +47,28 @@ bool json::util::validate(const std::string_view jsonString)
     return brackets.empty();
 }
 
-json::util::~util()
+json::Util::~Util()
 {
 }
 
-std::unique_ptr<json::util> json::util::parse(const std::string &json)
+std::unique_ptr<json::Util> json::Util::parse(const std::string &json)
 {
     std::string_view sv = std::string_view(json);
-    sv = json::util::trim(sv);
+    sv = json::Util::trim(sv);
     if (sv.front() == '{')
     {
-        json_object obj = parser::parse_object(sv);
-        return std::make_unique<json_object>(obj);
+        JSONObject obj = Parser::parseObject(sv);
+        return std::make_unique<JSONObject>(obj);
     }
     else if (sv.front() == '[')
     {
-        json_array arr = parser::parse_array(sv);
-        return std::make_unique<json_array>(arr);
+        JSONArray arr = Parser::parseArray(sv);
+        return std::make_unique<JSONArray>(arr);
     }
     throw std::invalid_argument("Invalid JSON string.");
 }
 
-std::string_view json::util::strip_curly_braces(std::string_view jsonView)
+std::string_view json::Util::stripCurlyBraces(std::string_view jsonView)
 {
     if (!jsonView.empty() && jsonView.front() == OCB && jsonView.back() == CCB)
     {
@@ -81,7 +81,7 @@ std::string_view json::util::strip_curly_braces(std::string_view jsonView)
     return jsonView;
 }
 
-std::string_view json::util::strip_square_brackets(std::string_view jsonView)
+std::string_view json::Util::stripSquareBrackets(std::string_view jsonView)
 {
     if (!jsonView.empty() && jsonView.front() == OSB && jsonView.back() == CSB)
     {
@@ -94,7 +94,7 @@ std::string_view json::util::strip_square_brackets(std::string_view jsonView)
     return jsonView;
 }
 
-std::vector<std::string_view> json::util::split_string_view_by(std::string_view strView, char delim)
+std::vector<std::string_view> json::Util::splitStringViewBy(std::string_view strView, char delim)
 {
     std::vector<std::string_view> result;
     size_t start = 0;
@@ -133,7 +133,7 @@ std::vector<std::string_view> json::util::split_string_view_by(std::string_view 
     return result;
 }
 
-bool json::util::is_integer(std::string_view str)
+bool json::Util::isInteger(std::string_view str)
 {
     if (str.empty())
         return false;
@@ -147,7 +147,7 @@ bool json::util::is_integer(std::string_view str)
     return std::all_of(str.begin() + startPos, str.end(), ::isdigit);
 }
 
-bool json::util::is_double(std::string_view str)
+bool json::Util::isDouble(std::string_view str)
 {
     if (str.empty())
         return false;
@@ -174,12 +174,12 @@ bool json::util::is_double(std::string_view str)
     return true;
 }
 
-bool json::util::is_boolean(std::string_view str)
+bool json::Util::isBoolean(std::string_view str)
 {
     return str == "true" || str == "false" || str == "True" || str == "False";
 }
 
-std::string_view json::util::trim(std::string_view stringView)
+std::string_view json::Util::trim(std::string_view stringView)
 {
     while (!stringView.empty() && std::isspace(stringView.front()))
     {
@@ -193,7 +193,7 @@ std::string_view json::util::trim(std::string_view stringView)
     return stringView;
 }
 
-int json::util::to_integer(std::string_view value)
+int json::Util::toInteger(std::string_view value)
 {
     int intValue;
     auto [ptr, ec] = std::from_chars(value.data(), value.data() + value.size(), intValue);
@@ -204,7 +204,7 @@ int json::util::to_integer(std::string_view value)
     return intValue;
 }
 
-double json::util::to_double(std::string_view value)
+double json::Util::toDouble(std::string_view value)
 {
     try
     {

@@ -1,58 +1,58 @@
-#include "json_parser.hpp"
+#include "JSONParser.hpp"
 #include <stack>
 #include <iostream>
 
 namespace json
 {
-    json_array parser::parse_array(std::string_view jsonView)
+    JSONArray Parser::parseArray(std::string_view jsonString)
     {
-        if (!util::validate(jsonView))
+        if (!Util::validate(jsonString))
         {
             throw std::runtime_error("json string square braces not balanced");
         }
-        if (jsonView.empty())
+        if (jsonString.empty())
         {
             throw std::runtime_error("json string is empty");
         }
         size_t pos = 0;
-        jsonView = util::trim(jsonView);
-        if (!(jsonView[pos] == OSB))
+        jsonString = Util::trim(jsonString);
+        if (!(jsonString[pos] == OSB))
         {
             throw std::runtime_error("json array needs to start with square brackets '[]' or curly braces '{}' ");
         }
-        json_array jsonArray;
+        JSONArray jsonArray;
         do
         {
-            switch (jsonView[pos])
+            switch (jsonString[pos])
             {
             case '[':
             {
-                jsonView = strip_square_brackets(jsonView);
-                std::vector<std::string_view> splits = split_string_view_by(jsonView, ',');
+                jsonString = stripSquareBrackets(jsonString);
+                std::vector<std::string_view> splits = splitStringViewBy(jsonString, ',');
                 for (auto s : splits)
                 {
                     if (s[0] == OCB)
                     {
-                        jsonArray.add(std::make_shared<json_object>(parse_object(s)));
+                        jsonArray.add(std::make_shared<JSONObject>(parseObject(s)));
                     }
                     else if (s[0] == OSB)
                     {
-                        jsonArray.add(std::make_shared<json_array>(parse_array(s)));
+                        jsonArray.add(std::make_shared<JSONArray>(parseArray(s)));
                     }
                     else
                     {
                         std::string_view element = trim(s);
-                        if (is_boolean(element))
+                        if (isBoolean(element))
                         {
                             jsonArray.add((element == "true" || element == "True"));
                         }
-                        else if (is_integer(element))
+                        else if (isInteger(element))
                         {
-                            jsonArray.add(to_integer(element));
+                            jsonArray.add(toInteger(element));
                         }
-                        else if (is_double(element))
+                        else if (isDouble(element))
                         {
-                            jsonArray.add(to_double(element));
+                            jsonArray.add(toDouble(element));
                         }
                         else
                         {
@@ -60,21 +60,21 @@ namespace json
                         }
                     }
                 }
-                pos += jsonView.size();
+                pos += jsonString.size();
             }
             break;
             }
-            if (pos <= jsonView.size())
+            if (pos <= jsonString.size())
                 pos++;
-        } while (pos <= jsonView.size() && !((jsonView[pos] != CCB || jsonView[pos] != CSB)));
+        } while (pos <= jsonString.size() && !((jsonString[pos] != CCB || jsonString[pos] != CSB)));
 
         return jsonArray;
     }
 
-    json_object parser::parse_object(std::string_view jsonView)
+    JSONObject Parser::parseObject(std::string_view jsonView)
     {
-        json_object jsonObj;
-        if (!util::validate(jsonView))
+        JSONObject jsonObj;
+        if (!Util::validate(jsonView))
         {
             throw std::runtime_error("json string brackets not balanced");
         }
@@ -83,7 +83,7 @@ namespace json
             throw std::runtime_error("json string is empty");
         }
         size_t pos = 0;
-        jsonView = util::trim(jsonView);
+        jsonView = Util::trim(jsonView);
         if (!(jsonView[pos] == OCB || jsonView[pos] == OSB))
         {
             throw std::runtime_error("json string needs to start with square brackets '[' or curly braces '{' ");
@@ -94,8 +94,8 @@ namespace json
             {
             case '{':
             {
-                jsonView = strip_curly_braces(jsonView);
-                std::vector<std::string_view> splits = split_string_view_by(jsonView, ',');
+                jsonView = stripCurlyBraces(jsonView);
+                std::vector<std::string_view> splits = splitStringViewBy(jsonView, ',');
 
                 for (std::string_view obj : splits)
                 {
@@ -104,26 +104,26 @@ namespace json
                     std::string_view value = trim(obj.substr(obj.find_first_of(':') + 1));
                     if (value[0] == OCB)
                     {
-                        jsonObj.put(std::string(key), std::make_shared<json_object>(parse_object(value)));
+                        jsonObj.put(std::string(key), std::make_shared<JSONObject>(parseObject(value)));
                     }
                     else if (value[0] == OSB)
                     {
-                        jsonObj.put(std::string(key), std::make_shared<json_array>(parse_array(value)));
+                        jsonObj.put(std::string(key), std::make_shared<JSONArray>(parseArray(value)));
                     }
                     else
                     {
-                        value = util::trim(value);
-                        if (is_boolean(value))
+                        value = Util::trim(value);
+                        if (isBoolean(value))
                         {
                             jsonObj.put(std::string(key), (value == "true" || value == "True"));
                         }
-                        else if (is_integer(value))
+                        else if (isInteger(value))
                         {
-                            jsonObj.put(std::string(key), to_integer(value));
+                            jsonObj.put(std::string(key), toInteger(value));
                         }
-                        else if (is_double(value))
+                        else if (isDouble(value))
                         {
-                            jsonObj.put(std::string(key), to_double(value));
+                            jsonObj.put(std::string(key), toDouble(value));
                         }
                         else
                         {
@@ -141,19 +141,19 @@ namespace json
         return jsonObj;
     }
 
-    bool parser::validate(const std::string &jsonString)
+    bool Parser::validate(const std::string &jsonString)
     {
         std::string_view stringView(jsonString);
-        return util::validate(stringView);
+        return Util::validate(stringView);
     }
 
-    std::future<json_array> parser::async_parse_array(std::string_view jsonView)
+    std::future<JSONArray> Parser::asyncParseArray(std::string_view jsonView)
     {
-        return async_parse(parse_array, jsonView); // Utilize the async_parse helper function
+        return asyncParse(parseArray, jsonView); // Utilize the async_parse helper function
     }
 
-    std::future<json_object> parser::async_parse_object(std::string_view jsonView)
+    std::future<JSONObject> Parser::asyncParseObject(std::string_view jsonView)
     {
-        return async_parse(parse_object, jsonView); // Utilize the async_parse helper function
+        return asyncParse(parseObject, jsonView); // Utilize the async_parse helper function
     }
 }

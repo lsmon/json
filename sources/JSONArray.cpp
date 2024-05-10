@@ -1,10 +1,10 @@
 #include <sstream>
-#include "json_array.hpp"
-#include "json_parser.hpp"
+#include "JSONArray.hpp"
+#include "JSONParser.hpp"
 
 namespace json
 {
-    json_array::json_array(const json_array &array)
+    JSONArray::JSONArray(const JSONArray &array)
     {
         for (const auto &element : array.elements)
         {
@@ -18,12 +18,12 @@ namespace json
         }
     }
 
-    json_array::json_array(const std::string &jsonString)
+    JSONArray::JSONArray(const std::string &jsonString)
     {
-        auto parsed = parser::parse(jsonString);
+        auto parsed = Parser::parse(jsonString);
         if (parsed)
         {
-            auto arr = dynamic_cast<json_array *>(parsed.get());
+            auto arr = dynamic_cast<JSONArray *>(parsed.get());
             if (arr)
             {
                 *this = std::move(*arr);
@@ -39,54 +39,52 @@ namespace json
         }
     }
 
-    size_t json_array::size() const
+    size_t JSONArray::size() const
     {
         return elements.size();
     }
 
-    void json_array::add(const std::string &element)
+    void JSONArray::add(const std::string &element)
     {
-
         elements.emplace_back(element);
     }
 
-    void json_array::add(const char *element)
+    void JSONArray::add(const char *element)
     {
         elements.emplace_back(std::move(std::string(element)));
     }
 
-    void json_array::add(const int &element)
+    void JSONArray::add(const int &element)
     {
         elements.emplace_back(element);
     }
 
-    void json_array::add(const bool &element)
+    void JSONArray::add(const bool &element)
     {
         elements.emplace_back(element);
     }
 
-    void json_array::add(const double &element)
+    void JSONArray::add(const double &element)
     {
         elements.emplace_back(element);
     }
 
-    void json_array::add(const std::shared_ptr<json_object> &element)
+    void JSONArray::add(const std::shared_ptr<JSONObject> &element)
     {
         elements.emplace_back(element);
     }
 
-    void json_array::add(const std::shared_ptr<json_array> &element)
+    void JSONArray::add(const std::shared_ptr<JSONArray> &element)
     {
         elements.emplace_back(element);
     }
-
     template <typename T>
-    T json_array::get(size_t index) const
+    T JSONArray::get(size_t index) const
     {
         return elements.at(index);
     }
 
-    std::string json_array::to_json_string() const
+    std::string JSONArray::toJSONString() const
     {
         std::stringstream ss;
         ss << "[";
@@ -109,13 +107,13 @@ namespace json
             {
                 ss << *floating;
             }
-            else if (auto obj = std::get_if<std::shared_ptr<json_object>>(&element.getRecord()))
+            else if (auto obj = std::get_if<std::shared_ptr<JSONObject>>(&element.getRecord()))
             {
-                ss << (*obj)->to_json_string();
+                ss << (*obj)->toJSONString();
             }
-            else if (auto arr = std::get_if<std::shared_ptr<json_array>>(&element.getRecord()))
+            else if (auto arr = std::get_if<std::shared_ptr<JSONArray>>(&element.getRecord()))
             {
-                ss << (*arr)->to_json_string();
+                ss << (*arr)->toJSONString();
             }
             else
             {
@@ -131,25 +129,25 @@ namespace json
         return ss.str();
     }
 
-    json_array &json_array::operator<<(const std::string &element)
+    JSONArray &JSONArray::operator<<(const std::string &element)
     {
         add(element);
         return *this;
     }
 
-    json_array &json_array::operator<<(const bool &element)
+    JSONArray &JSONArray::operator<<(const bool &element)
     {
         add(element);
         return *this;
     }
 
-    json_array &json_array::operator<<(const int &element)
+    JSONArray &JSONArray::operator<<(const int &element)
     {
         add(element);
         return *this;
     }
 
-    json_array &json_array::operator<<(const double &element)
+    JSONArray &JSONArray::operator<<(const double &element)
     {
         add(element);
         return *this;
