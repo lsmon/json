@@ -22,7 +22,7 @@ namespace json
 
         static std::unique_ptr<Util> parse(const std::string &json);
 
-        static bool validate(const std::string_view jsonString);
+        static bool validate(std::string_view jsonString);
 
         static std::string_view stripCurlyBraces(std::string_view jsonView);
 

@@ -1,6 +1,6 @@
 #add_executable(${PROJECT_NAME}_test tests/JsonTest.cpp)
 # target_include_directories(${PROJECT_NAME}_test PRIVATE sources)
-target_link_libraries(${PROJECT_NAME}_test PRIVATE ${PROJECT_NAME}-lib)
+target_link_libraries(${PROJECT_NAME}_test PRIVATE _${PROJECT_NAME})
 
 enable_testing()
 

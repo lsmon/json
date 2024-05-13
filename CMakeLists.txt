@@ -27,9 +27,9 @@ project(json)
 set(CMAKE_CXX_STANDARD 17)
 
 set(PROJECT_VERSION_MAJOR 0)
-set(PROJECT_VERSION_MINOR 1)
-set(PROJECT_VERSION_TWEAK 0)
-set(PROJECT_VERSION_PATCH 0)
+set(PROJECT_VERSION_MINOR 2)
+set(PROJECT_VERSION_TWEAK 1)
+set(PROJECT_VERSION_PATCH 1)
 
 set(PROJECT_VERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_TWEAK}.${PROJECT_VERSION_PATCH})
 
@@ -52,19 +52,20 @@ set(SRC
 include_directories(include)
 include_directories(sources)
 
-add_library(${PROJECT_NAME}-lib ${SRC})
+add_library(_${PROJECT_NAME} ${SRC})
 
-target_include_directories(${PROJECT_NAME}-lib PUBLIC include)
+target_include_directories(_${PROJECT_NAME} PUBLIC include)
 
 add_executable(${PROJECT_NAME} main.cpp)
 # target_include_directories(${PROJECT_NAME} PRIVATE sources)
-target_link_libraries(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}-lib)
+target_link_libraries(${PROJECT_NAME} PRIVATE _${PROJECT_NAME})
 
 
 add_executable(${PROJECT_NAME}_test tests/JSONTest.cpp)
 # target_include_directories(${PROJECT_NAME}_test PRIVATE sources)
-target_link_libraries(${PROJECT_NAME}_test PRIVATE ${PROJECT_NAME}-lib)
+target_link_libraries(${PROJECT_NAME}_test PRIVATE _${PROJECT_NAME})
 
 enable_testing()
 
 include(tests/CMakeLists.txt)
+include(cmake/cpack.cmake)
