@@ -68,4 +68,4 @@ target_link_libraries(${PROJECT_NAME}_test PRIVATE _${PROJECT_NAME})
 enable_testing()
 
 include(tests/CMakeLists.txt)
-include(cmake/cpack.cmake)
+include(cpack/CMakeLists.txt)
