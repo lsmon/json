@@ -52,18 +52,18 @@ set(SRC
 include_directories(include)
 include_directories(sources)
 
-add_library(_${PROJECT_NAME} ${SRC})
+add_library(_${PROJECT_NAME}-${PROJECT_VERSION} ${SRC})
 
-target_include_directories(_${PROJECT_NAME} PUBLIC include)
+target_include_directories(_${PROJECT_NAME}-${PROJECT_VERSION} PUBLIC include)
 
 add_executable(${PROJECT_NAME} main.cpp)
 # target_include_directories(${PROJECT_NAME} PRIVATE sources)
-target_link_libraries(${PROJECT_NAME} PRIVATE _${PROJECT_NAME})
+target_link_libraries(${PROJECT_NAME} PRIVATE _${PROJECT_NAME}-${PROJECT_VERSION})
 
 
 add_executable(${PROJECT_NAME}_test tests/JSONTest.cpp)
 # target_include_directories(${PROJECT_NAME}_test PRIVATE sources)
-target_link_libraries(${PROJECT_NAME}_test PRIVATE _${PROJECT_NAME})
+target_link_libraries(${PROJECT_NAME}_test PRIVATE _${PROJECT_NAME}-${PROJECT_VERSION})
 
 enable_testing()
 

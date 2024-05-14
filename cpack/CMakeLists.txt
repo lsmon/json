@@ -1,5 +1,5 @@
 #Specify installation rules
-install(TARGETS _${PROJECT_NAME} DESTINATION lib)
+install(TARGETS _${PROJECT_NAME}-${PROJECT_VERSION} DESTINATION lib)
 
 install(FILES ${INC} DESTINATION include)
 
