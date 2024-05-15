@@ -34,20 +34,20 @@ set(PROJECT_VERSION_PATCH 1)
 set(PROJECT_VERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_TWEAK}.${PROJECT_VERSION_PATCH})
 
 set(INC
-        include/JSONParser.hpp
-        include/JSONObject.hpp
-        include/JSONArray.hpp
-        include/JSONValue.hpp
-        include/JSONUtil.hpp
+        include/json/JSONParser.hpp
+        include/json/JSONObject.hpp
+        include/json/JSONArray.hpp
+        include/json/JSONValue.hpp
+        include/json/JSONUtil.hpp
         )
 
 set(SRC
-        sources/JSONParser.cpp
-        sources/JSONObject.cpp
-        sources/JSONArray.cpp
-        sources/JSONValue.cpp
-        sources/JSONUtil.cpp
-        sources/JSONValue.cpp)
+        sources/json/JSONParser.cpp
+        sources/json/JSONObject.cpp
+        sources/json/JSONArray.cpp
+        sources/json/JSONValue.cpp
+        sources/json/JSONUtil.cpp
+        sources/json/JSONValue.cpp)
 
 include_directories(include)
 include_directories(sources)

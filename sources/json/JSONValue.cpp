@@ -2,7 +2,7 @@
 // Created by Salomon Lee on 5/7/24.
 //
 
-#include "JSONValue.hpp"
+#include "json/JSONValue.hpp"
 
 std::string json::JSONValue::variantToString(
     const std::variant<int, bool, double, std::string, std::shared_ptr<JSONObject>, std::shared_ptr<JSONArray>> &var)

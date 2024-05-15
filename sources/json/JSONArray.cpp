@@ -1,6 +1,6 @@
 #include <sstream>
-#include "JSONArray.hpp"
-#include "JSONParser.hpp"
+#include "json/JSONArray.hpp"
+#include "json/JSONParser.hpp"
 
 namespace json
 {

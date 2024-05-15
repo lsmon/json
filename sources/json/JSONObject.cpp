@@ -1,7 +1,7 @@
 #include <sstream>
 #include <iostream>
 #include <variant>
-#include "JSONObject.hpp"
+#include "json/JSONObject.hpp"
 
 namespace json
 {

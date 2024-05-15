@@ -1,7 +1,7 @@
 #Specify installation rules
 install(TARGETS _${PROJECT_NAME}-${PROJECT_VERSION} DESTINATION lib)
 
-install(FILES ${INC} DESTINATION include)
+install(FILES ${INC} DESTINATION include/json)
 
 # Set up CPack
 set(CPACK_PACKAGE_NAME "lib_${PROJECT_NAME}")

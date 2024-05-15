@@ -1,6 +1,6 @@
 #include <iostream>
-#include "JSONParser.hpp"
-#include "JSONObject.hpp"
+#include "json/JSONParser.hpp"
+#include "json/JSONObject.hpp"
 #include <unordered_map>
 #include <string_view>
 
