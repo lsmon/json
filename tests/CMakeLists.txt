@@ -1,5 +1,5 @@
-#add_executable(${PROJECT_NAME}_test tests/JsonTest.cpp)
-# target_include_directories(${PROJECT_NAME}_test PRIVATE sources)
+add_executable(${PROJECT_NAME}_test tests/JSONTest.cpp)
+target_include_directories(${PROJECT_NAME}_test PRIVATE include)
 target_link_libraries(${PROJECT_NAME}_test PRIVATE _${PROJECT_NAME}-${PROJECT_VERSION})
 
 enable_testing()
@@ -22,4 +22,6 @@ add_test(JSON_TEST_STRING_TO_OJBECT json_test string-to-object)
 
 add_test(JSON_TEST_STRING_TO_ARRAY json_test string-to-array)
 
-#add_test(JSON_TEST json_test COMMAND json_test)
+add_executable(${PROJECT_NAME}_variant_test tests/VariantTest.cpp)
+target_include_directories(${PROJECT_NAME}_variant_test PRIVATE include)
+target_link_libraries(${PROJECT_NAME}_variant_test PRIVATE _${PROJECT_NAME}-${PROJECT_VERSION})

@@ -9,18 +9,21 @@ namespace json
     {
         for (const auto &pair : obj.key_value)
         {
-            if (auto inner_obj = std::get_if<std::shared_ptr<JSONObject>>(&pair.second.getRecord()))
+            pair.second.getRecord().visit([&](const auto &value)
+                                          {
+            using T = std::decay_t<decltype(value)>;
+            if constexpr (std::is_same_v<T, std::shared_ptr<JSONObject>>)
             {
-                key_value[pair.first].setRecord(std::make_shared<JSONObject>(**inner_obj));
+                key_value[pair.first].setRecord(std::make_shared<JSONObject>(*value));
             }
-            else if (auto inner_arr = std::get_if<std::shared_ptr<JSONArray>>(&pair.second.getRecord()))
+            else if constexpr (std::is_same_v<T, std::shared_ptr<JSONArray>>)
             {
-                key_value[pair.first].setRecord(std::make_shared<JSONArray>(**inner_arr));
+                key_value[pair.first].setRecord(std::make_shared<JSONArray>(*value));
             }
             else
             {
                 key_value[pair.first] = pair.second;
-            }
+            } });
         }
     }
 
@@ -123,34 +126,37 @@ namespace json
         for (const auto &pair : key_value)
         {
             ss << pair.first << ": ";
-            if (auto str = std::get_if<std::string>(&pair.second.getRecord()))
-            {
-                ss << *str;
-            }
-            else if (auto integer = std::get_if<int>(&pair.second.getRecord()))
-            {
-                ss << *integer;
-            }
-            else if (auto boolean = std::get_if<bool>(&pair.second.getRecord()))
-            {
-                ss << (*boolean ? "true" : "false");
-            }
-            else if (auto floating = std::get_if<double>(&pair.second.getRecord()))
-            {
-                ss << *floating;
-            }
-            else if (auto obj = std::get_if<std::shared_ptr<JSONObject>>(&pair.second.getRecord()))
-            {
-                ss << (*obj)->toJSONString();
-            }
-            else if (auto arr = std::get_if<std::shared_ptr<JSONArray>>(&pair.second.getRecord()))
-            {
-                ss << (*arr)->toJSONString();
-            }
-            else
-            {
-                ss << "null";
-            }
+            pair.second.getRecord().visit([&ss](auto &&value)
+                                          {
+                using T = std::decay_t<decltype(value)>;
+                if constexpr (std::is_same_v<T, std::string>)
+                {
+                    ss << value;
+                }
+                else if constexpr (std::is_same_v<T, int>)
+                {
+                    ss << value;
+                }
+                else if constexpr (std::is_same_v<T, bool>)
+                {
+                    ss << (value ? "true" : "false");
+                }
+                else if constexpr (std::is_same_v<T, double>)
+                {
+                    ss << value;
+                }
+                else if constexpr (std::is_same_v<T, std::shared_ptr<JSONObject>>)
+                {
+                    ss << value->toJSONString();
+                }
+                else if constexpr (std::is_same_v<T, std::shared_ptr<JSONArray>>)
+                {
+                    ss << value->toJSONString();
+                }
+                else
+                {
+                    ss << "null";
+                } });
 
             if (count++ < key_value.size() - 1)
             {

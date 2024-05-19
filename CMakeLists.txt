@@ -39,6 +39,8 @@ set(INC
         include/json/JSONArray.hpp
         include/json/JSONValue.hpp
         include/json/JSONUtil.hpp
+        include/util/Variant.hpp
+        include/util/Variant.tpp
         )
 
 set(SRC
@@ -47,25 +49,19 @@ set(SRC
         sources/json/JSONArray.cpp
         sources/json/JSONValue.cpp
         sources/json/JSONUtil.cpp
-        sources/json/JSONValue.cpp)
+        sources/json/JSONValue.cpp
+        # sources/util/Variant.cpp
+        )
 
 include_directories(include)
-include_directories(sources)
-
-add_library(_${PROJECT_NAME}-${PROJECT_VERSION} ${SRC})
+set(SOURCES ${INC} ${SRC})
+add_library(_${PROJECT_NAME}-${PROJECT_VERSION} ${SOURCES})
 
 target_include_directories(_${PROJECT_NAME}-${PROJECT_VERSION} PUBLIC include)
 
 add_executable(${PROJECT_NAME} main.cpp)
-# target_include_directories(${PROJECT_NAME} PRIVATE sources)
+target_include_directories(${PROJECT_NAME} PRIVATE include)
 target_link_libraries(${PROJECT_NAME} PRIVATE _${PROJECT_NAME}-${PROJECT_VERSION})
-
-
-add_executable(${PROJECT_NAME}_test tests/JSONTest.cpp)
-# target_include_directories(${PROJECT_NAME}_test PRIVATE sources)
-target_link_libraries(${PROJECT_NAME}_test PRIVATE _${PROJECT_NAME}-${PROJECT_VERSION})
-
-enable_testing()
 
 include(tests/CMakeLists.txt)
 include(cpack/CMakeLists.txt)

@@ -53,6 +53,201 @@ The key value pairing is pretty straight forward for keys since they are always 
 std::variant<int, double, std::string, JSONObject, JSONArray>
 ```
 
+### Custom variant
+
+However since `std::variant` is only available from standard library 17 and above. But most of the default linux versions have c++ 11 as default.
+A custom Variant class was needed to be developed.
+
+### Overview
+
+The `Variant` class is a custom implementation that mimics the behavior of `std::variant`. It can store one value from a set of predefined types and provides mechanisms to access and manipulate the stored value safely.
+
+### Components
+
+#### Header File: `Variant.hpp`
+
+The header file defines the `Variant` class template and necessary internal structures. Here's a detailed breakdown:
+
+1. Forward Declarations and Includes:
+
+    * The file includes necessary standard headers like `<iostream>`, `<stdexcept>`, `<utility>`, and `<type_traits>` for various functionalities.
+
+2. Namespace `detail`:
+
+    * Contains helper templates and functions used internally by the `Variant` class.
+
+3. Template Class `IndexOf`:
+
+    * A meta-function to find the index of a type in a list of types.
+    * Specializations for recursive type searching and base case when the type is not found.
+
+4. Template Class `TypeAt`:
+
+    * A meta-function to get the type at a specific index in a list of types.
+    * Specializations for accessing the type recursively and base case.
+
+5. Function `visit_impl`:
+
+    * Implements the visiting functionality, which calls a visitor on the active type stored in the `Variant`.
+
+6. Class Template Variant:
+
+    * The main `Variant` class template, which can store one value of a specified set of types.
+    * Contains member functions and utilities for type-safe storage and retrieval of values.
+
+#### Implementation File: Variant.cpp
+
+This file contains the implementation of the Variant class's member functions. Here's the detailed explanation:
+
+1. Template Functions for Type Construction and Destruction:
+
+    * `destroy<T>()`: Destroys the stored value if it is of type `T`.
+    * `construct<T>(const T& value)`: Constructs a value of type `T` in the storage using copy semantics.
+    * `construct<T>(T&& value)`: Constructs a value of type `T` in the storage using move semantics.
+
+2. Constructor Template:
+
+    * Initializes the `Variant` with a value of one of the specified types.
+    * Uses SFINAE (Substitution Failure Is Not An Error) to ensure that only valid types can be stored.
+
+3. Destructor:
+
+    * Calls the `visit` function to destroy the stored value.
+
+4. Copy and Move Constructors:
+
+    * `Variant(const Variant& other)`: Copy constructor that creates a copy of the stored value.
+    * `Variant(Variant&& other) noexcept`: Move constructor that moves the stored value.
+
+5. Assignment Operators:
+
+    * `operator=(const Variant& other)`: Copy assignment operator that assigns the value from another Variant.
+    * `operator=(Variant&& other) noexcept`: Move assignment operator that moves the value from another Variant.
+
+6. Index and Type Check Functions:
+
+    * `index() const`: Returns the index of the currently stored type.
+    * `holds_alternative<T>() const`: Checks if the `Variant` holds a value of type `T`.
+
+7. Get Functions:
+
+    * `get<T>()`: Returns a reference to the stored value if it is of type `T`, otherwise throws an exception.
+    * `get<T>() const`: Const version of `get<T>()`.
+
+8. Visitor Functions:
+
+    * `visit<Visitor>(Visitor&& visitor)`: Applies a visitor to the stored value.
+    * `visit<Visitor>(Visitor&& visitor) const`: Const version of `visit<Visitor>(Visitor&& visitor)`.
+
+### Detailed Breakdown of Important Parts
+
+#### IndexOf Meta-function
+
+This meta-function helps to find the index of a type in a variadic template list. For example, in `Variant<int, double, std::string>`, `IndexOf<double, int, double, std::string>::value` will be `1`.
+
+``` c++
+template <typename T, typename First, typename... Rest>
+struct IndexOf<T, First, Rest...> {
+    static constexpr size_t value = std::is_same<T, First>::value ? 0 : 1 + IndexOf<T, Rest...>::value;
+};
+
+template <typename T>
+struct IndexOf<T> {
+    static constexpr size_t value = static_cast<size_t>(-1);
+};
+```
+
+#### TypeAt Meta-function
+
+This meta-function retrieves the type at a specific index in a variadic template list. For example, `TypeAt<1, int, double, std::string>::type` will be `double`.
+
+``` c++
+template <size_t Index, typename First, typename... Rest>
+struct TypeAt<Index, First, Rest...> {
+    using type = typename TypeAt<Index - 1, Rest...>::type;
+};
+
+template <typename First, typename... Rest>
+struct TypeAt<0, First, Rest...> {
+    using type = First;
+};
+```
+
+#### Variant Class Template
+
+The `Variant` class uses a union-like storage (`std::aligned_union_t`) to store one of the possible types. It manages the construction, destruction, and visitation of the stored value.
+
+``` c++
+template <typename... Types>
+class Variant {
+    static_assert(sizeof...(Types) > 0, "Variant must have at least one type");
+
+    using Storage = std::aligned_union_t<0, Types...>;
+    Storage storage;
+    size_t type_index;
+    ...
+}
+```
+
+#### Visiting Functionality
+
+The `visit_impl` function template applies a visitor to the stored value, providing a type-safe way to operate on the value without knowing its type at compile time.
+
+``` c++
+template <typename Visitor, typename Variant, typename... Types, size_t... Is>
+decltype(auto) visit_impl(Visitor&& visitor, Variant& var, std::index_sequence<Is...>) {
+    using ReturnType = decltype(visitor(std::declval<typename TypeAt<0, Types...>::type&>()));
+    using Functor = ReturnType(*)(Visitor&&, Variant&);
+
+    Functor funcs[] = {
+        [](Visitor&& vis, Variant& v) -> ReturnType {
+            return std::forward<Visitor>(vis)(v.template get<typename TypeAt<Is, Types...>::type>());
+        }...
+    };
+
+    return funcs[var.index()](std::forward<Visitor>(visitor), var);
+}
+```
+
+#### Variant Member Functions
+
+The member functions handle construction, destruction, and access to the stored value. They ensure that only the correct type operations are performed, and throw exceptions when incorrect types are accessed.
+
+```c++
+template <typename... Types>
+template <typename T>
+void Variant<Types...>::construct(const T& value) {
+    new (&storage) T(value);
+}
+
+template <typename... Types>
+template <typename T>
+void Variant<Types...>::construct(T&& value) {
+    new (&storage) T(std::move(value));
+}
+
+template <typename... Types>
+template <typename T>
+T& Variant<Types...>::get() {
+    if (!holds_alternative<T>()) {
+        throw std::bad_variant_access();
+    }
+    return *reinterpret_cast<T*>(&storage);
+}
+
+template <typename... Types>
+template <typename Visitor>
+decltype(auto) Variant<Types...>::visit(Visitor&& visitor) {
+    return detail::visit_impl<Visitor, Variant<Types...>, Types...>(
+        std::forward<Visitor>(visitor), *this, std::index_sequence_for<Types...>{});
+}
+```
+
+### Conclusion
+
+This custom `Variant` class provides a flexible and type-safe way to store and operate on one of several types. It includes type indexing, construction, destruction, and visitation mechanisms. The design ensures type safety, proper resource management, and a clean interface for users. This approach avoids dependencies on third-party libraries like Boost and can be used in environments where C++11 is the target, and `Variant` is unavailable.
+
+
 ## Performance
 
 At the begining of writing this project I felt that it was well structured. However with time and re reading my code I did some research on how to improve it's performance.
@@ -84,7 +279,7 @@ void JSONArray::add(const std::string &element) {
 
 ## Memory management
 
-Since the `JSONObject` and `JSONArray` classes don't directly manage any dynamic resources like pointers, there's no need to explicitly deallocate any resources in their destructors. The default destructors provided by the compiler will handle the cleanup of member variables automatically when an object of these classes goes out of scope. So there's no need to have default destructor on each class. However, I ended up debating myself if the use of pointers as containers for the JSON object/array (`std::variant<int, bool, double, std::string, JSONObject, JSONArray>>* key_value;` `std::vector<std::variant<int, bool, double, std::string, JSONObject, JSONArray>> * elements;`) will it be beneficial? What I found is that:
+Since the `JSONObject` and `JSONArray` classes don't directly manage any dynamic resources like pointers, there's no need to explicitly deallocate any resources in their destructors. The default destructors provided by the compiler will handle the cleanup of member variables automatically when an object of these classes goes out of scope. So there's no need to have default destructor on each class. However, I ended up debating myself if the use of pointers as containers for the JSON object/array (`Variant<int, bool, double, std::string, JSONObject, JSONArray>>* key_value;` `std::vector<Variant<int, bool, double, std::string, JSONObject, JSONArray>> * elements;`) will it be beneficial? What I found is that:
 
 > If I declare the private members `key_value` and `elements` as `pointers`, then I'll need to manage the memory allocation and deallocation manually. This means the implementation of custom constructors, destructors, copy constructors, and copy assignment operators to ensure proper memory management.
 
@@ -128,11 +323,11 @@ In the context of my project, using references for class members (`key_value`, `
 
 ### For JSONObject Class
 
-* *__key_value__*: This member represents the key-value pairs in my JSON object. Since the size of the map may vary, and dynamic memory management might not be necessary, using a reference (`std::unordered_map<std::string, std::variant<int, bool, double, std::string, JSONObject, JSONArray>>&`) would be a suitable choice. References provide simplicity and safety and avoid unnecessary overhead associated with pointers.
+* *__key_value__*: This member represents the key-value pairs in my JSON object. Since the size of the map may vary, and dynamic memory management might not be necessary, using a reference (`std::unordered_map<std::string, Variant<int, bool, double, std::string, JSONObject, JSONArray>>&`) would be a suitable choice. References provide simplicity and safety and avoid unnecessary overhead associated with pointers.
 
 ### For JSONArray Class:
 
-* *__elements__: This member stores the elements of your JSON array. Similar to key_value, using a reference (`std::vector<std::variant<int, bool, double, std::string, JSONObject, JSONArray>>&`) would be appropriate if the size of the array is known at construction and dynamic memory management isn't needed.
+* *__elements__: This member stores the elements of your JSON array. Similar to key_value, using a reference (`std::vector<Variant<int, bool, double, std::string, JSONObject, JSONArray>>&`) would be appropriate if the size of the array is known at construction and dynamic memory management isn't needed.
 
 > Overall, in my JSON classes, using references for class members would likely be beneficial due to their simplicity, safety, and avoidance of unnecessary dynamic memory overhead.
 > However, if my design requires dynamic memory management or deferred initialization of members, you may consider using pointers (possibly smart pointers like std::unique_ptr or std::shared_ptr) instead.
@@ -197,7 +392,7 @@ Based on my code and considering factors such as ease of use, performance, and m
    * References allow users to work directly with the containers without worrying about memory allocation or deallocation.
 
 3. *__For Individual Elements__*:
-   * For individual elements stored within the containers (e.g., values in `std::variant` or elements in `std::vector`), using values (not pointers or references) is generally the simplest and most efficient approach.
+   * For individual elements stored within the containers (e.g., values in `Variant` or elements in `std::vector`), using values (not pointers or references) is generally the simplest and most efficient approach.
    * Values provide straightforward access to data without the overhead of indirection.
 
 ### Here's a summary of my choicess

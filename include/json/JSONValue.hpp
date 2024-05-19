@@ -5,10 +5,9 @@
 #ifndef JSON_JSONVALUE_HPP
 #define JSON_JSONVALUE_HPP
 
-
-#include <variant>
 #include <memory>
-#include "JSONObject.hpp"
+#include "json/JSONObject.hpp"
+#include "util/Variant.hpp"
 
 namespace json {
     class JSONObject;
@@ -16,26 +15,27 @@ namespace json {
 
     class JSONValue {
     private:
-        std::variant<int, bool, double, std::string, std::shared_ptr<JSONObject>, std::shared_ptr<JSONArray>> record;
+        Variant<int, bool, double, std::string, std::shared_ptr<JSONObject>, std::shared_ptr<JSONArray>> record;
 
     public:
-        JSONValue() = default;
+        JSONValue() : record(std::string()) {} // Default to string, can be changed to another default type
 
         explicit JSONValue(
-                const std::variant<int, bool, double, std::string, std::shared_ptr<JSONObject>, std::shared_ptr<JSONArray>> &record);
+                const Variant<int, bool, double, std::string, std::shared_ptr<JSONObject>, std::shared_ptr<JSONArray>> &record);
 
-        static std::string variantToString(const std::variant<int, bool, double, std::string, std::shared_ptr<JSONObject>, std::shared_ptr<JSONArray>>& var) ;
+        static std::string variantToString(const Variant<int, bool, double, std::string, std::shared_ptr<JSONObject>, std::shared_ptr<JSONArray>>& var) ;
 
         friend std::ostream& operator<<(std::ostream& os, const JSONValue& v);
 
-        const std::variant<int, bool, double, std::string, std::shared_ptr<json::JSONObject>, std::shared_ptr<json::JSONArray>> &
+        const Variant<int, bool, double, std::string, std::shared_ptr<json::JSONObject>, std::shared_ptr<json::JSONArray>> &
         getRecord() const;
 
         void setRecord(
-                const std::variant<int, bool, double, std::string, std::shared_ptr<json::JSONObject>, std::shared_ptr<json::JSONArray>> &record);
+                const Variant<int, bool, double, std::string, std::shared_ptr<json::JSONObject>, std::shared_ptr<json::JSONArray>> &record);
 
         template <typename T>
-        bool is(const std::variant<int, bool, double, std::string, std::shared_ptr<JSONObject>, std::shared_ptr<JSONArray>>& value) const;
+        bool is(const Variant<int, bool, double, std::string, std::shared_ptr<JSONObject>, std::shared_ptr<JSONArray>>& value) const;
+        // bool is() const;
 
         bool isObject(const std::string& value) const;
 
