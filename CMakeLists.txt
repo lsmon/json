@@ -40,7 +40,6 @@ set(INC
         include/json/JSONValue.hpp
         include/json/JSONUtil.hpp
         include/util/Variant.hpp
-        include/util/Variant.tpp
         )
 
 set(SRC
@@ -50,7 +49,8 @@ set(SRC
         sources/json/JSONValue.cpp
         sources/json/JSONUtil.cpp
         sources/json/JSONValue.cpp
-        # sources/util/Variant.cpp
+        sources/util/VariantImpl.tpp
+        sources/util/Variant.cpp
         )
 
 include_directories(include)

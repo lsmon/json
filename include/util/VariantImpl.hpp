@@ -113,7 +113,4 @@ decltype(auto) Variant<Types...>::visit(Visitor&& visitor) const {
         std::forward<Visitor>(visitor), *this, std::index_sequence_for<Types...>{});
 }
 
-// Explicit template instantiation
-template class Variant<int, double, std::string>;
-
 #endif // VARIANT_IMPL_HPP

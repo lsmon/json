@@ -5,6 +5,7 @@
 #include <stdexcept>
 #include <utility>
 #include <type_traits>
+#include <typeinfo>
 
 template <typename... Types>
 class Variant;
