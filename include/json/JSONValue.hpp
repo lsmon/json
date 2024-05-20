@@ -6,7 +6,8 @@
 #define JSON_JSONVALUE_HPP
 
 #include <memory>
-#include "json/JSONObject.hpp"
+#include <ostream>
+#include "JSONObject.hpp"
 #include "util/Variant.hpp"
 
 namespace json {
