@@ -105,7 +105,7 @@ namespace json
             {
                 return std::get<T>(it->second);
             }
-            catch (const std::bad_variant_access &ex)
+            catch (const std::exception &ex)
             {
                 std::cerr << ex.what() << std::endl;
                 throw std::runtime_error("Type mismatch for key: " + key);
