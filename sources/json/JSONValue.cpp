@@ -3,6 +3,7 @@
 //
 
 #include "json/JSONValue.hpp"
+#include <sstream>
 
 std::string json::JSONValue::variantToString(
     const Variant<int, bool, double, std::string, std::shared_ptr<JSONObject>, std::shared_ptr<JSONArray>> &var)

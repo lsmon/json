@@ -9,7 +9,7 @@ int main() {
 
     try {
         std::cout << var1.get<int>() << std::endl; // Throws std::bad_variant_access
-    } catch (const std::bad_variant_access& e) {
+    } catch (const std::exception& e) {
         std::cout << e.what() << std::endl; // Outputs: std::bad_variant_access
     }
 

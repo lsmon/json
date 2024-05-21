@@ -49,7 +49,6 @@ set(SRC
         sources/json/JSONValue.cpp
         sources/json/JSONUtil.cpp
         sources/json/JSONValue.cpp
-        sources/util/VariantImpl.tpp
         sources/util/Variant.cpp
         )
 

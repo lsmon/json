@@ -85,7 +85,7 @@ template <typename... Types>
 template <typename T>
 T& Variant<Types...>::get() {
     if (!holds_alternative<T>()) {
-        throw std::bad_variant_access();
+        throw std::exception();
     }
     return *reinterpret_cast<T*>(&storage);
 }
@@ -94,7 +94,7 @@ template <typename... Types>
 template <typename T>
 const T& Variant<Types...>::get() const {
     if (!holds_alternative<T>()) {
-        throw std::bad_variant_access();
+        throw std::exception();
     }
     return *reinterpret_cast<const T*>(&storage);
 }
