@@ -21,7 +21,6 @@ JSONArray Parser::parseArray(std::string_view jsonString)
     }
     JSONArray jsonArray;
     std::string_view stringView = stripSquareBrackets(jsonString);
-    std::cout<<stringView<<std::endl;
     jsonString = stringView;
     std::vector<std::string_view> splits = Util::splitStringViewBy(jsonString, ',');
     for (auto s : splits) {
@@ -43,54 +42,6 @@ JSONArray Parser::parseArray(std::string_view jsonString)
             }
         }
     }
-    /*do
-    {
-        switch (jsonString[pos])
-        {
-            case '[':
-            {
-                jsonString = stripSquareBrackets(jsonString);
-                std::vector<std::string_view> splits = splitStringViewBy(jsonString, ',');
-                for (auto s : splits)
-                {
-                    if (s[0] == OCB)
-                    {
-
-                        jsonArray.add(Value(std::make_shared<JSONObject>(parseObject(s))));
-                    }
-                    else if (s[0] == OSB)
-                    {
-                        jsonArray.add(Value(std::make_shared<JSONArray>(parseArray(s))));
-                    }
-                    else
-                    {
-                        std::string_view element = trim(s);
-                        if (isBoolean(element))
-                        {
-                            jsonArray.add(Value(element == "true" || element == "True"));
-                        }
-                        else if (isInteger(element))
-                        {
-                            jsonArray.add(Value(toInteger(element)));
-                        }
-                        else if (isDouble(element))
-                        {
-                            jsonArray.add(Value(toDouble(element)));
-                        }
-                        else
-                        {
-                            jsonArray.add(Value(std::string(element)));
-                        }
-                    }
-                }
-                pos += jsonString.size();
-            }
-                break;
-        }
-        if (pos <= jsonString.size())
-            pos++;
-    } while (pos <= jsonString.size() && !((jsonString[pos] != CCB || jsonString[pos] != CSB)));
-*/
     return jsonArray;
 }
 
