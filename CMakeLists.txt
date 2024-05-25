@@ -21,46 +21,36 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ]]
-cmake_minimum_required(VERSION 3.24)
+cmake_minimum_required(VERSION 3.16)
 project(json)
 
 set(CMAKE_CXX_STANDARD 17)
 
 set(PROJECT_VERSION_MAJOR 0)
-set(PROJECT_VERSION_MINOR 2)
-set(PROJECT_VERSION_TWEAK 1)
-set(PROJECT_VERSION_PATCH 1)
-
+set(PROJECT_VERSION_MINOR 3)
+set(PROJECT_VERSION_TWEAK 0)
+set(PROJECT_VERSION_PATCH 0)
 set(PROJECT_VERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_TWEAK}.${PROJECT_VERSION_PATCH})
 
-set(INC
-        include/json/JSONParser.hpp
-        include/json/JSONObject.hpp
-        include/json/JSONArray.hpp
-        include/json/JSONValue.hpp
-        include/json/JSONUtil.hpp
-        include/util/Variant.hpp
-        )
+set(BIN_NAME ${PROJECT_NAME}-${PROJECT_VERSION})
+set(LIB_NAME _${BIN_NAME})
 
-set(SRC
-        sources/json/JSONParser.cpp
-        sources/json/JSONObject.cpp
-        sources/json/JSONArray.cpp
-        sources/json/JSONValue.cpp
-        sources/json/JSONUtil.cpp
-        sources/json/JSONValue.cpp
-        sources/util/Variant.cpp
-        )
+set(SOURCES include/JSON.hpp
+        sources/JSON.cpp
+        include/util/Util.hpp
+        sources/util/Util.cpp
+        include/util/Parser.hpp
+        sources/util/Parser.cpp
+)
 
 include_directories(include)
-set(SOURCES ${INC} ${SRC})
-add_library(_${PROJECT_NAME}-${PROJECT_VERSION} ${SOURCES})
 
-target_include_directories(_${PROJECT_NAME}-${PROJECT_VERSION} PUBLIC include)
+add_library(${LIB_NAME} ${SOURCES} )
+target_include_directories(${LIB_NAME} PUBLIC include)
 
-add_executable(${PROJECT_NAME} main.cpp)
-target_include_directories(${PROJECT_NAME} PRIVATE include)
-target_link_libraries(${PROJECT_NAME} PRIVATE _${PROJECT_NAME}-${PROJECT_VERSION})
+add_executable(${BIN_NAME} main.cpp)
+target_include_directories(${BIN_NAME} PRIVATE include)
+target_link_libraries(${BIN_NAME} PUBLIC ${LIB_NAME} pthread)
 
 include(tests/CMakeLists.txt)
 include(cpack/CMakeLists.txt)
