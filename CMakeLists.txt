@@ -35,13 +35,10 @@ set(PROJECT_VERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_
 set(BIN_NAME ${PROJECT_NAME}-${PROJECT_VERSION})
 set(LIB_NAME _${BIN_NAME})
 
-set(SOURCES include/JSON.hpp
-        sources/JSON.cpp
-        include/util/Util.hpp
-        sources/util/Util.cpp
-        include/util/Parser.hpp
-        sources/util/Parser.cpp
-)
+set(INC include/JSON.hpp)
+set(INC_UTIL include/util/Util.hpp include/util/Parser.hpp)
+
+set(SOURCES ${INC} ${INC_UTIL} sources/JSON.cpp sources/util/Util.cpp sources/util/Parser.cpp)
 
 include_directories(include)
 

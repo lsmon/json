@@ -2,6 +2,7 @@
 install(TARGETS ${LIB_NAME} DESTINATION lib)
 
 install(FILES ${INC} DESTINATION include)
+install(FILES ${INC_UTIL} DESTINATION include/util)
 
 # Set up CPack
 set(CPACK_PACKAGE_NAME "lib_${PROJECT_NAME}")
