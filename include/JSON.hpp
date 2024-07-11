@@ -20,12 +20,12 @@ class JSONArray;
 
 class Value : public Util {
 private:
-    std::variant<int, double, bool, std::string, std::shared_ptr<JSONObject>, std::shared_ptr<JSONArray>> record;
+    std::variant<int, double, long, bool, std::string, std::shared_ptr<JSONObject>, std::shared_ptr<JSONArray>> record;
 
 public:
     Value();
 
-    explicit Value(const std::variant<int, double, bool, std::string>& value);
+    explicit Value(const std::variant<int, double, long, bool, std::string>& value);
 
     explicit Value(const std::shared_ptr<JSONObject>& jsonObject);
 
@@ -34,13 +34,13 @@ public:
     template<typename T>
     bool is() const;
 
-    void set(const std::variant<int, double, bool, std::string, std::shared_ptr<JSONObject>, std::shared_ptr<JSONArray>>& r);
+    void set(const std::variant<int, double, long, bool, std::string, std::shared_ptr<JSONObject>, std::shared_ptr<JSONArray>>& r);
 
-    std::variant<int, double, bool, std::string, std::shared_ptr<JSONObject>, std::shared_ptr<JSONArray>> get() const;
+    std::variant<int, double, long, bool, std::string, std::shared_ptr<JSONObject>, std::shared_ptr<JSONArray>> get() const;
 
     std::string str() const;
 
-    Value operator=(const std::variant<int, double, bool, std::string, std::shared_ptr<JSONObject>, std::shared_ptr<JSONArray>>& r);
+    Value operator=(const std::variant<int, double, long, bool, std::string, std::shared_ptr<JSONObject>, std::shared_ptr<JSONArray>>& r);
 
     friend std::ostream& operator<<(std::ostream& os, const Value& value);
 };
@@ -78,7 +78,7 @@ public:
 
     void put(const std::string& key, const Value& value);
 
-    void put(const std::string& key, const std::variant<int, double, bool, std::string>& r);
+    void put(const std::string& key, const std::variant<int, double, long, bool, std::string>& r);
 
     std::vector<std::string> keys() const;
 

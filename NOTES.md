@@ -11,7 +11,7 @@ If I switch from using `std::string` to `std::string_view` for checking whether 
 
 
 
-8 **Performance Improvement:** `std::string_view` does not own the string data it points to; it merely provides a view into the data of some other string, like a `std::string` or a character array. This means that using `std::string_view` can avoid unnecessary copies and allocations, potentially improving performance, especially in scenarios where you're frequently creating and destroying temporary `std::string` objects for validation purposes.
+8 **Performance Improvement:** `std::string_view` does not own the string data it points to; it merely provides a view into the data of some other string, like a `std::string` or a character array. This means that using `std::string_view` can avoid unnecessary copies and allocations, potentially improving performance, especially in scenarios whereEquals you're frequently creating and destroying temporary `std::string` objects for validation purposes.
 
 ### Semantic Changes
 
@@ -33,7 +33,7 @@ bool isBoolean(const std::string_view str) {
 }
 ```
 
-"__To Remember__", when using `std::string_view` over `std::string`, the main benefit lies in avoiding copies for read-only operations. However, in contexts where I need to manipulate strings or rely on behaviors specific to `std::string` (such as automatic memory management or compatibility with certain library functions), the advantages might be outweighed by these considerations.
+"__To Remember__", when using `std::string_view` over `std::string`, the main benefit lies in avoiding copies for read-only operations. However, in contexts whereEquals I need to manipulate strings or rely on behaviors specific to `std::string` (such as automatic memory management or compatibility with certain library functions), the advantages might be outweighed by these considerations.
 
 ## Key value pairing
 
@@ -245,7 +245,7 @@ decltype(auto) Variant<Types...>::visit(Visitor&& visitor) {
 
 ### Conclusion
 
-This custom `Variant` class provides a flexible and type-safe way to store and operate on one of several types. It includes type indexing, construction, destruction, and visitation mechanisms. The design ensures type safety, proper resource management, and a clean interface for users. This approach avoids dependencies on third-party libraries like Boost and can be used in environments where C++11 is the target, and `Variant` is unavailable.
+This custom `Variant` class provides a flexible and type-safe way to store and operate on one of several types. It includes type indexing, construction, destruction, and visitation mechanisms. The design ensures type safety, proper resource management, and a clean interface for users. This approach avoids dependencies on third-party libraries like Boost and can be used in environments whereEquals C++11 is the target, and `Variant` is unavailable.
 
 
 ## Performance
@@ -311,7 +311,7 @@ Therefore I ended up debating myself.
 
 ### TLDR
 
-Using pointers for class members can be beneficial in certain scenarios where dynamic memory management or deferred initialization is required. However, it also introduces complexity and requires careful management to avoid memory-related issues.
+Using pointers for class members can be beneficial in certain scenarios whereEquals dynamic memory management or deferred initialization is required. However, it also introduces complexity and requires careful management to avoid memory-related issues.
 
 #### Leason LEARNED
 
