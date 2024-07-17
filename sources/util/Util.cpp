@@ -69,13 +69,12 @@ std::string_view Util::stripCurlyBraces(std::string_view jsonView)
 {
     if (!jsonView.empty() && jsonView.front() == OCB && jsonView.back() == CCB)
     {
-        jsonView = jsonView.substr(1, jsonView.length() - 2);
+        return jsonView.substr(1, jsonView.length() - 2);
     }
     else
     {
         throw std::runtime_error("String does not start and end with curly braces");
     }
-    return jsonView;
 }
 
 std::string_view Util::stripSquareBrackets(std::string_view jsonView)
@@ -84,8 +83,10 @@ std::string_view Util::stripSquareBrackets(std::string_view jsonView)
     {
         return jsonView.substr(1, jsonView.size() - 2);
     }
-
-    return jsonView;
+    else
+    {
+        throw std::runtime_error("String does not start and end with square braces");
+    }
 }
 
 std::vector<std::string_view> Util::splitStringViewBy(std::string_view strView, char delim)
@@ -160,7 +161,7 @@ bool Util::isBoolean(std::string_view str)
     return str == "true" || str == "false" || str == "True" || str == "False";
 }
 
-std::string_view Util::trim(std::string_view stringView)
+void Util::trim(std::string_view stringView)
 {
     while (!stringView.empty() && std::isspace(stringView.front()))
     {
@@ -170,8 +171,6 @@ std::string_view Util::trim(std::string_view stringView)
     {
         stringView.remove_suffix(1);
     }
-
-    return stringView;
 }
 
 int Util::toInteger(std::string_view value)
