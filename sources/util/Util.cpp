@@ -161,7 +161,7 @@ bool Util::isBoolean(std::string_view str)
     return str == "true" || str == "false" || str == "True" || str == "False";
 }
 
-void Util::trim(std::string_view stringView)
+std::string_view Util::trim(std::string_view stringView)
 {
     while (!stringView.empty() && std::isspace(stringView.front()))
     {
@@ -171,6 +171,7 @@ void Util::trim(std::string_view stringView)
     {
         stringView.remove_suffix(1);
     }
+    return stringView;
 }
 
 int Util::toInteger(std::string_view value)
