@@ -5,6 +5,7 @@
 #include <charconv>
 #include <algorithm>
 #include <stack>
+#include <regex>
 #include "util/Util.hpp"
 #include "JSON.hpp"
 #include "util/Parser.hpp"
@@ -122,11 +123,23 @@ bool Util::isInteger(std::string_view str)
     size_t startPos = 0;
     if (str[0] == '+' || str[0] == '-')
         startPos = 1;
-
+    if (str.size() >= 10 && isLong(str) && toLong(str) > 2147483647)
+        return false;
     if (startPos == str.size())
         return false; // string is only "+" or "-"
 
     return std::all_of(str.begin() + startPos, str.end(), ::isdigit);
+}
+
+bool Util::isLong(std::string_view str)
+{
+    std::regex pattern("^-?\\d+$");
+
+    if (std::regex_match(str.begin(), str.end(), pattern)) {
+        return true;
+    } else {
+        return false;
+    }
 }
 
 bool Util::isDouble(std::string_view str)
@@ -174,6 +187,24 @@ std::string_view Util::trim(std::string_view stringView)
     return stringView;
 }
 
+std::string_view Util::trimQuotes(std::string_view str) {
+    size_t start = 0;
+    size_t end = str.length();
+
+    // Check if the first character is a double quote
+    if (start < end && str[start] == '"') {
+        ++start;
+    }
+
+    // Check if the last character is a double quote
+    if (start < end && str[end - 1] == '"') {
+        --end;
+    }
+
+    // Return the trimmed substring
+    return str.substr(start, end - start);
+}
+
 int Util::toInteger(std::string_view value)
 {
     int intValue;
@@ -183,6 +214,17 @@ int Util::toInteger(std::string_view value)
         throw std::runtime_error("Conversion to int failed");
     }
     return intValue;
+}
+
+long Util::toLong(std::string_view value)
+{
+    long longValue;
+    auto [ptr, ec] = std::from_chars(value.data(), value.data() + value.size(), longValue);
+    if (ec != std::errc())
+    {
+        throw std::runtime_error("Conversion to int failed");
+    }
+    return longValue;
 }
 
 double Util::toDouble(std::string_view value)

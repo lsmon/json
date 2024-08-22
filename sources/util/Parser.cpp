@@ -15,7 +15,7 @@ JSONArray Parser::parseArray(std::string_view jsonString)
         throw std::runtime_error("json string is empty");
     }
     size_t pos = 0;
-    jsonString = Util::trim(jsonString);
+    jsonString = Util::trimQuotes(Util::trim(jsonString));
     if (jsonString[pos] != '[') {
         throw std::runtime_error("json array needs to start with square brackets '[]' or curly braces '{}' ");
     }
@@ -35,6 +35,8 @@ JSONArray Parser::parseArray(std::string_view jsonString)
                 jsonArray.add(Value(s == "true" || s == "True"));
             } else if (Util::isInteger(s)) {
                 jsonArray.add(Value(Util::toInteger(s)));
+            } else if (Util::isLong(s)) {
+                jsonArray.add(Value(Util::toLong(s)));
             } else if (Util::isDouble(s)) {
                 jsonArray.add(Value(Util::toDouble(s)));
             } else {
@@ -74,8 +76,8 @@ JSONObject Parser::parseObject(std::string_view jsonView)
                 for (std::string_view obj : splits)
                 {
                     obj = trim(obj);
-                    std::string_view key = trim(obj.substr(0, obj.find_first_of(':')));
-                    std::string_view value = trim(obj.substr(obj.find_first_of(':') + 1));
+                    std::string_view key = trimQuotes(trim(obj.substr(0, obj.find_first_of(':'))));
+                    std::string_view value = trimQuotes(trim(obj.substr(obj.find_first_of(':') + 1)));
                     if (value[0] == OCB)
                     {
                         jsonObj.put(std::string(key), Value(std::make_shared<JSONObject>(parseObject(value))));
@@ -95,6 +97,10 @@ JSONObject Parser::parseObject(std::string_view jsonView)
                         else if (isInteger(value))
                         {
                             jsonObj.put(std::string(key), toInteger(value));
+                        }
+                        else if (isLong(value))
+                        {
+                            jsonObj.put(std::string(key), toLong(value));
                         }
                         else if (isDouble(value))
                         {

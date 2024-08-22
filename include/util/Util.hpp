@@ -33,15 +33,21 @@ public:
 
     static bool isInteger(std::string_view str);
 
+    static bool isLong(std::string_view str);
+
     static bool isDouble(std::string_view str);
 
     static bool isBoolean(std::string_view str);
 
     static std::string_view trim(std::string_view sv);
 
+    static std::string_view trimQuotes(std::string_view str);
+
     static int toInteger(std::string_view value);
 
     static double toDouble(std::string_view value);
+
+    static long toLong(std::string_view str);
 
     static bool validate(std::string_view jsonString);
 };
