@@ -32,6 +32,8 @@ std::string Value::str() const {
     std::stringstream ss;
     if (std::holds_alternative<int>(record))
         ss << std::get<int>(record);
+    else if (std::holds_alternative<long>(record))
+        ss << std::get<long>(record);
     else if (std::holds_alternative<double>(record))
         ss << std::get<double>(record);
     else if (std::holds_alternative<bool>(record))
