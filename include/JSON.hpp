@@ -25,7 +25,7 @@ private:
 public:
     Value();
 
-    explicit Value(const std::variant<int, double, long, bool, std::string>& value);
+    explicit Value(const std::variant<int, double, long, bool, std::string> & value);
 
     explicit Value(const std::shared_ptr<JSONObject>& jsonObject);
 
@@ -63,6 +63,10 @@ public:
     std::string str() const;
 
     JSONArray operator=(const Value& v);
+
+    Value& operator[](std::size_t index);
+
+    const Value& operator[](std::size_t index) const;
 };
 
 class JSONObject : public Util {
@@ -78,7 +82,9 @@ public:
 
     void put(const std::string& key, const Value& value);
 
-    void put(const std::string& key, const std::variant<int, double, long, bool, std::string>& r);
+    void put(const std::string &key, const char *r);
+
+    void put(const std::string& key, const std::variant<int, double, long, bool, std::string> & r);
 
     std::vector<std::string> keys() const;
 

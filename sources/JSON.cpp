@@ -6,7 +6,7 @@
 Value::Value() : record(std::string()) {}
 
 Value::Value(const std::variant<int, double, long, bool, std::string> &value)  {
-    set((const std::variant<int, double, long, bool, std::basic_string<char>, std::shared_ptr<JSONObject>, std::shared_ptr<JSONArray>> &) value);
+    set((const std::variant<int, double, long, bool, std::string, std::shared_ptr<JSONObject>, std::shared_ptr<JSONArray>> &) value);
 }
 
 Value::Value(const std::shared_ptr<JSONObject> &jsonObject) : record(jsonObject) {}
@@ -106,6 +106,15 @@ JSONArray JSONArray::operator=(const Value &v) {
     return *this;
 }
 
+Value &JSONArray::operator[](std::size_t index) {
+    return values.at(index);
+}
+
+const Value &JSONArray::operator[](std::size_t index) const {
+    return values.at(index);
+}
+
+
 JSONObject::JSONObject(const std::string &jsonString) {
     auto parsed = Util::parse(jsonString);
     if (parsed) {
@@ -123,6 +132,10 @@ void JSONObject::put(const std::string &key, const Value &value) {
 void JSONObject::put(const std::string &key, const std::variant<int, double, long, bool, std::string> &r) {
     Value v(r);
     object[key] = v;
+}
+
+void JSONObject::put(const std::string &key, const char *r) {
+    put(key, std::string(r));
 }
 
 std::vector<std::string> JSONObject::keys() const

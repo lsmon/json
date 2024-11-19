@@ -101,9 +101,10 @@ void testCreateJsonArrayFromString()
     std::cout << json.str() << std::endl;
     for (size_t i = 0; i < json.size(); i++)
     {
-        //     auto value = json.get<std::string>(i);
-        //     std::cout << value << std::endl;
+             auto value = json[i];
+             std::cout << value << std::endl;
     }
+
 }
 
 void wholeBundle()
@@ -164,6 +165,8 @@ int main(int argc, char **argv)
     {
         handleArguments(v);
     }
-
+    JSONObject json;
+    json.put("key", "value");
+    std::cout << json.str() << std::endl;
     return 0;
 }
