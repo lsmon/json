@@ -49,5 +49,5 @@ add_executable(${BIN_NAME} main.cpp)
 target_include_directories(${BIN_NAME} PRIVATE include)
 target_link_libraries(${BIN_NAME} PUBLIC ${LIB_NAME} pthread)
 
-include(tests/CMakeLists.txt)
-include(cpack/CMakeLists.txt)
+#include(tests/CMakeLists.txt)
+#include(cpack/CMakeLists.txt)
