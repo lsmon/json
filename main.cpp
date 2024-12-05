@@ -22,13 +22,13 @@ int main() {
     jsonObject.put("double", 1.0134);
     jsonObject.put("bool", true);
     jsonObject.put("string", std::string("Hello world"));
-    std::cout << "JSONObject: " << jsonObject.str() << std::endl;
+    std::cout << "JSONObject: " << jsonObject.dump(2) << std::endl;
 
     auto objectNotation = Util::parse(jsonObject.str());
-    std::cout << "Parsed JSON: " << objectNotation->str() << std::endl;
+    std::cout << "Parsed JSON: " << objectNotation->dump(2) << std::endl;
 
     auto arrayNotation = Util::parse(jsonArray.str());
-    std::cout << "Parsed Array: " << arrayNotation->str() << std::endl;
+    std::cout << "Parsed Array: " << arrayNotation->dump(2) << std::endl;
 
     return 0;
 }

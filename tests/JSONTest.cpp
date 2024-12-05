@@ -167,6 +167,6 @@ int main(int argc, char **argv)
     }
     JSONObject json;
     json.put("key", "value");
-    std::cout << json.str() << std::endl;
+    std::cout << json.dump(2) << std::endl;
     return 0;
 }

@@ -60,6 +60,29 @@ std::ostream &operator<<(std::ostream &os, const Value &value) {
     return os;
 }
 
+std::string Value::dump(const int &indentSz) const {
+    std::string indent = "\n";
+    for (int i = 0; i < indentSz; i++) indent += " ";
+    std::stringstream ss;
+    if (std::holds_alternative<int>(record))
+        ss << indent << std::get<int>(record);
+    else if (std::holds_alternative<long>(record))
+        ss << indent << std::get<long>(record);
+    else if (std::holds_alternative<double>(record))
+        ss << indent << std::get<double>(record);
+    else if (std::holds_alternative<bool>(record))
+        ss << indent << (std::get<bool>(record) ? "true" : "false");
+    else if (std::holds_alternative<std::string>(record))
+        ss <<  indent << "\"" << std::get<std::string>(record) << "\"";
+    else if (std::holds_alternative<std::shared_ptr<JSONObject>>(record))
+        ss << indent << std::get<std::shared_ptr<JSONObject>>(record)->dump(indentSz);
+    else if (std::holds_alternative<std::shared_ptr<JSONArray>>(record))
+        ss << indent << std::get<std::shared_ptr<JSONArray>>(record)->dump(indentSz);
+    else
+        ss << "null";
+    return ss.str();
+}
+
 
 JSONArray::JSONArray(const std::string &jsonString) {
     auto parsed = Util::parse(jsonString);
@@ -114,6 +137,23 @@ const Value &JSONArray::operator[](std::size_t index) const {
     return values.at(index);
 }
 
+std::string JSONArray::dump(const int &indentSz) const {
+    std::string indent = "\n";
+    for (int i = 0; i < indentSz; i++) indent += " ";
+    std::stringstream ss;
+    ss << "[ ";
+    bool first = true;
+    for (const auto& value : values) {
+        if (!first) {
+            ss << ", ";
+        }
+        ss << indent << value.str();
+        first = false;
+    }
+    ss << "\n]";
+    return ss.str();
+}
+
 
 JSONObject::JSONObject(const std::string &jsonString) {
     auto parsed = Util::parse(jsonString);
@@ -150,20 +190,18 @@ std::vector<std::string> JSONObject::keys() const
 }
 
 std::string JSONObject::str() const {
-    {
-        std::stringstream ss;
-        ss << "{";
-        bool first = true;
-        for (const auto& [key, value] : object) {
-            if (!first) {
-                ss << ",";
-            }
-            ss << "\"" << key << "\":" << value.str();
-            first = false;
+    std::stringstream ss;
+    ss << "{";
+    bool first = true;
+    for (const auto& [key, value] : object) {
+        if (!first) {
+            ss << ", ";
         }
-        ss << "}";
-        return ss.str();
+        ss << "\"" << key << "\": " << value.str();
+        first = false;
     }
+    ss << "\n}";
+    return ss.str();
 }
 
 Value &JSONObject::operator[](const std::string &key) {
@@ -172,4 +210,21 @@ Value &JSONObject::operator[](const std::string &key) {
 
 const std::unordered_map<std::string, Value> &JSONObject::get() const {
     return object;
+}
+
+std::string JSONObject::dump(const int &indentSz) const {
+    std::stringstream ss;
+    std::string indent = "\n";
+    for (int i = 0; i < indentSz; i++) indent += " ";
+    ss << "{";
+    bool first = true;
+    for (const auto& [key, value] : object) {
+        if (!first) {
+            ss << ", ";
+        }
+        ss << indent << "\"" << key << "\": " << value.str();
+        first = false;
+    }
+    ss << "\n}";
+    return ss.str();
 }

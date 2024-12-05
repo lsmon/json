@@ -23,6 +23,8 @@ public:
 
     virtual std::string str() const = 0;
 
+    virtual std::string dump(const int& ) const = 0;
+
     static std::unique_ptr<Util> parse(const std::string &json);
 
     static std::string_view stripCurlyBraces(std::string_view jsonView);

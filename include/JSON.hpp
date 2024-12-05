@@ -40,6 +40,8 @@ public:
 
     std::string str() const;
 
+    std::string dump(const int &indentSz) const;
+
     Value operator=(const std::variant<int, double, long, bool, std::string, std::shared_ptr<JSONObject>, std::shared_ptr<JSONArray>>& r);
 
     friend std::ostream& operator<<(std::ostream& os, const Value& value);
@@ -60,7 +62,9 @@ public:
 
     void add(const std::string& value);
 
-    std::string str() const;
+    std::string str() const override;
+
+    std::string dump(const int &indentSz) const;
 
     JSONArray operator=(const Value& v);
 
@@ -88,7 +92,9 @@ public:
 
     std::vector<std::string> keys() const;
 
-    std::string str() const;
+    std::string str() const override;
+
+    std::string dump(const int &indentSz) const;
 
     Value& operator[](const std::string& key);
 };
