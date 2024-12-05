@@ -61,23 +61,21 @@ std::ostream &operator<<(std::ostream &os, const Value &value) {
 }
 
 std::string Value::dump(const int &indentSz) const {
-    std::string indent = "\n";
-    for (int i = 0; i < indentSz; i++) indent += " ";
     std::stringstream ss;
     if (std::holds_alternative<int>(record))
-        ss << indent << std::get<int>(record);
+        ss << std::get<int>(record);
     else if (std::holds_alternative<long>(record))
-        ss << indent << std::get<long>(record);
+        ss << std::get<long>(record);
     else if (std::holds_alternative<double>(record))
-        ss << indent << std::get<double>(record);
+        ss << std::get<double>(record);
     else if (std::holds_alternative<bool>(record))
-        ss << indent << (std::get<bool>(record) ? "true" : "false");
+        ss << (std::get<bool>(record) ? "true" : "false");
     else if (std::holds_alternative<std::string>(record))
-        ss <<  indent << "\"" << std::get<std::string>(record) << "\"";
+        ss << "\"" << std::get<std::string>(record) << "\"";
     else if (std::holds_alternative<std::shared_ptr<JSONObject>>(record))
-        ss << indent << std::get<std::shared_ptr<JSONObject>>(record)->dump(indentSz);
+        ss << std::get<std::shared_ptr<JSONObject>>(record)->dump(indentSz);
     else if (std::holds_alternative<std::shared_ptr<JSONArray>>(record))
-        ss << indent << std::get<std::shared_ptr<JSONArray>>(record)->dump(indentSz);
+        ss << std::get<std::shared_ptr<JSONArray>>(record)->dump(indentSz);
     else
         ss << "null";
     return ss.str();
@@ -138,19 +136,19 @@ const Value &JSONArray::operator[](std::size_t index) const {
 }
 
 std::string JSONArray::dump(const int &indentSz) const {
-    std::string indent = "\n";
-    for (int i = 0; i < indentSz; i++) indent += " ";
+    std::string indent(indentSz, ' ');
+    std::string innerIndent(indentSz + 2, ' '); // Increase indent for nested elements
     std::stringstream ss;
-    ss << "[ ";
+    ss << "[\n";
     bool first = true;
-    for (const auto& value : values) {
+    for (const auto &value : values) {
         if (!first) {
-            ss << ", ";
+            ss << ",\n";
         }
-        ss << indent << value.str();
+        ss << innerIndent << value.dump(indentSz + 2);
         first = false;
     }
-    ss << "\n]";
+    ss << "\n" << indent << "]";
     return ss.str();
 }
 
@@ -213,18 +211,18 @@ const std::unordered_map<std::string, Value> &JSONObject::get() const {
 }
 
 std::string JSONObject::dump(const int &indentSz) const {
+    std::string indent(indentSz, ' ');
+    std::string innerIndent(indentSz + 2, ' '); // Increase indent for nested elements
     std::stringstream ss;
-    std::string indent = "\n";
-    for (int i = 0; i < indentSz; i++) indent += " ";
-    ss << "{";
+    ss << "{\n";
     bool first = true;
-    for (const auto& [key, value] : object) {
+    for (const auto &[key, value] : object) {
         if (!first) {
-            ss << ", ";
+            ss << ",\n";
         }
-        ss << indent << "\"" << key << "\": " << value.str();
+        ss << innerIndent << "\"" << key << "\": " << value.dump(indentSz + 2);
         first = false;
     }
-    ss << "\n}";
+    ss << "\n" << indent << "}";
     return ss.str();
 }
