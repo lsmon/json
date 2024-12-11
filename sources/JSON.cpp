@@ -198,7 +198,7 @@ std::string JSONObject::str() const {
         ss << "\"" << key << "\": " << value.str();
         first = false;
     }
-    ss << "\n}";
+    ss << "}";
     return ss.str();
 }
 
