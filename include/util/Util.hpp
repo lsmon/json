@@ -23,7 +23,7 @@ public:
 
     virtual std::string str() const = 0;
 
-    virtual std::string dump(const int& ) const = 0;
+    virtual std::string dump(const int &indentSz = 0, const int &currentSz = 0) const = 0;
 
     static std::unique_ptr<Util> parse(const std::string &json);
 

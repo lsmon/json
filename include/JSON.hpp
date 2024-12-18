@@ -31,8 +31,9 @@ public:
 
     explicit Value(const std::shared_ptr<JSONArray>& jsonArray);
 
-    template<typename T>
-    bool is() const;
+    template<typename T> [[nodiscard]] bool is() const;
+
+    template<class C> [[nodiscard]] bool isObject() const;
 
     void set(const std::variant<int, double, long, bool, std::string, std::shared_ptr<JSONObject>, std::shared_ptr<JSONArray>>& r);
 
@@ -40,7 +41,9 @@ public:
 
     std::string str() const;
 
-    std::string dump(const int &indentSz) const;
+    std::string c_str() const;
+
+    std::string dump(const int &indentSz = 0, const int &currentSz=0) const;
 
     Value operator=(const std::variant<int, double, long, bool, std::string, std::shared_ptr<JSONObject>, std::shared_ptr<JSONArray>>& r);
 
@@ -64,7 +67,9 @@ public:
 
     std::string str() const override;
 
-    std::string dump(const int &indentSz) const;
+    std::string dump(const int &indentSz = 0, const int &currentSzz=0) const override;
+
+    std::vector<Value> get() const;
 
     JSONArray operator=(const Value& v);
 
@@ -94,7 +99,7 @@ public:
 
     std::string str() const override;
 
-    std::string dump(const int &indentSz) const;
+    std::string dump(const int &indentSz = 0, const int &currentSz = 0) const;
 
     Value& operator[](const std::string& key);
 };

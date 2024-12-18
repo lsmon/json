@@ -39,6 +39,7 @@ void testJsonArrayOfJsonObjects()
     std::cout << "TESTING SIMPLE JSON ARRAY STRING PARSING" << std::endl;
     std::string jsonString = R"( [{"name":"John"}, {"age":1}, {"pi": 3.14}, {"truth":false}] )";
     auto json = Util::parse(jsonString);
+
     std::cout << json->str() << std::endl;
 }
 
@@ -168,5 +169,7 @@ int main(int argc, char **argv)
     JSONObject json;
     json.put("key", "value");
     std::cout << json.dump(2) << std::endl;
+    JSONObject jsonObject( R"({"city_state": {"state": "NY", "city": "New York"}, "name": "John Doe", "types":["citizen","resident","non-alien","undocumented"]})");
+    std::cout << jsonObject.dump(4) << std::endl;
     return 0;
 }

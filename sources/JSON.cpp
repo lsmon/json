@@ -28,6 +28,11 @@ bool Value::is() const {
     return std::holds_alternative<T>(record);
 }
 
+template<class T>
+bool Value::isObject() const {
+    return std::holds_alternative<std::shared_ptr<JSONObject>>(record) || std::holds_alternative<std::shared_ptr<JSONArray>>(record);
+}
+
 std::string Value::str() const {
     std::stringstream ss;
     if (std::holds_alternative<int>(record))
@@ -49,6 +54,14 @@ std::string Value::str() const {
     return ss.str();
 }
 
+std::string Value::c_str() const {
+    std::string cstr = str();
+    if (cstr.size() >= 2 && cstr.front() == '"' && cstr.back() == '"') {
+        return cstr.substr(1, cstr.size() - 2); // Remove the first and last character
+    }
+    return cstr;
+}
+
 Value Value::operator=(
         const std::variant<int, double, long, bool, std::string, std::shared_ptr<JSONObject>, std::shared_ptr<JSONArray>> &r) {
     set(r);
@@ -60,7 +73,7 @@ std::ostream &operator<<(std::ostream &os, const Value &value) {
     return os;
 }
 
-std::string Value::dump(const int &indentSz) const {
+std::string Value::dump(const int &indentSz, const int &currentSz) const {
     std::stringstream ss;
     if (std::holds_alternative<int>(record))
         ss << std::get<int>(record);
@@ -70,12 +83,16 @@ std::string Value::dump(const int &indentSz) const {
         ss << std::get<double>(record);
     else if (std::holds_alternative<bool>(record))
         ss << (std::get<bool>(record) ? "true" : "false");
-    else if (std::holds_alternative<std::string>(record))
-        ss << "\"" << std::get<std::string>(record) << "\"";
-    else if (std::holds_alternative<std::shared_ptr<JSONObject>>(record))
-        ss << std::get<std::shared_ptr<JSONObject>>(record)->dump(indentSz);
+    else if (std::holds_alternative<std::string>(record)) {
+        std::string recordStr = std::get<std::string>(record);
+        if (!recordStr.empty() && recordStr.front() != '"' && recordStr.back() != '"')
+            ss << "\"" << recordStr << "\"";
+        else
+            ss << recordStr;
+    } else if (std::holds_alternative<std::shared_ptr<JSONObject>>(record))
+        ss << std::get<std::shared_ptr<JSONObject>>(record)->dump(indentSz, currentSz);
     else if (std::holds_alternative<std::shared_ptr<JSONArray>>(record))
-        ss << std::get<std::shared_ptr<JSONArray>>(record)->dump(indentSz);
+        ss << std::get<std::shared_ptr<JSONArray>>(record)->dump(indentSz, currentSz);
     else
         ss << "null";
     return ss.str();
@@ -135,9 +152,9 @@ const Value &JSONArray::operator[](std::size_t index) const {
     return values.at(index);
 }
 
-std::string JSONArray::dump(const int &indentSz) const {
-    std::string indent(indentSz, ' ');
-    std::string innerIndent(indentSz + 2, ' '); // Increase indent for nested elements
+std::string JSONArray::dump(const int &indentSz, const int &currentSz) const {
+    std::string indent(currentSz, ' ');                // Current indentation
+    std::string innerIndent(currentSz + indentSz, ' '); // Next level indentation
     std::stringstream ss;
     ss << "[\n";
     bool first = true;
@@ -145,13 +162,21 @@ std::string JSONArray::dump(const int &indentSz) const {
         if (!first) {
             ss << ",\n";
         }
-        ss << innerIndent << value.dump(indentSz + 2);
+        const int newIndentSz = currentSz + indentSz;
+        if (value.isObject<JSONObject>() || value.isObject<JSONArray>()) {
+            ss << value.dump(indentSz, newIndentSz);
+        } else {
+            ss << std::string(newIndentSz, ' ') << value.dump(0);
+        }
         first = false;
     }
     ss << "\n" << indent << "]";
     return ss.str();
 }
 
+std::vector<Value> JSONArray::get() const {
+    return values;
+}
 
 JSONObject::JSONObject(const std::string &jsonString) {
     auto parsed = Util::parse(jsonString);
@@ -210,19 +235,28 @@ const std::unordered_map<std::string, Value> &JSONObject::get() const {
     return object;
 }
 
-std::string JSONObject::dump(const int &indentSz) const {
-    std::string indent(indentSz, ' ');
-    std::string innerIndent(indentSz + 2, ' '); // Increase indent for nested elements
+std::string JSONObject::dump(const int &indentSz, const int &currentSz) const {
+    std::string indent(currentSz, ' ');                // Current indentation
+    std::string innerIndent(currentSz + indentSz, ' '); // Next level indentation
+
     std::stringstream ss;
     ss << "{\n";
+
     bool first = true;
     for (const auto &[key, value] : object) {
         if (!first) {
             ss << ",\n";
         }
-        ss << innerIndent << "\"" << key << "\": " << value.dump(indentSz + 2);
+        ss << innerIndent << "\"" << key << "\": ";
+        if (value.isObject<JSONObject>() || value.isObject<JSONArray>()) {
+            const int newIndentSz = currentSz + indentSz;
+            ss << value.dump(indentSz, newIndentSz);
+        } else {
+            ss << value.dump(0);
+        }
         first = false;
     }
+
     ss << "\n" << indent << "}";
     return ss.str();
 }
