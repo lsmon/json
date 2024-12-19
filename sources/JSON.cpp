@@ -5,8 +5,8 @@
 
 Value::Value() : record(std::string()) {}
 
-Value::Value(const std::variant<int, double, long, bool, std::string> &value)  {
-    set((const std::variant<int, double, long, bool, std::string, std::shared_ptr<JSONObject>, std::shared_ptr<JSONArray>> &) value);
+Value::Value(const std::variant<int, double, long, long long, bool, std::string> &value)  {
+    set((const std::variant<int, double, long, long long, bool, std::string, std::shared_ptr<JSONObject>, std::shared_ptr<JSONArray>> &) value);
 }
 
 Value::Value(const std::shared_ptr<JSONObject> &jsonObject) : record(jsonObject) {}
@@ -14,11 +14,11 @@ Value::Value(const std::shared_ptr<JSONObject> &jsonObject) : record(jsonObject)
 Value::Value(const std::shared_ptr<JSONArray> &jsonArray) : record(jsonArray) {}
 
 void Value::set(
-        const std::variant<int, double, long, bool, std::string, std::shared_ptr<JSONObject>, std::shared_ptr<JSONArray>> &r) {
+        const std::variant<int, double, long, long long, bool, std::string, std::shared_ptr<JSONObject>, std::shared_ptr<JSONArray>> &r) {
     record = r;
 }
 
-std::variant<int, double, long, bool, std::string, std::shared_ptr<JSONObject>, std::shared_ptr<JSONArray>>
+std::variant<int, double, long, long long, bool, std::string, std::shared_ptr<JSONObject>, std::shared_ptr<JSONArray>>
 Value::get() const {
     return record;
 }
@@ -63,7 +63,7 @@ std::string Value::c_str() const {
 }
 
 Value Value::operator=(
-        const std::variant<int, double, long, bool, std::string, std::shared_ptr<JSONObject>, std::shared_ptr<JSONArray>> &r) {
+        const std::variant<int, double, long, long long, bool, std::string, std::shared_ptr<JSONObject>, std::shared_ptr<JSONArray>> &r) {
     set(r);
     return *this;
 }
@@ -192,7 +192,7 @@ void JSONObject::put(const std::string &key, const Value &value) {
     object[key] = value;
 }
 
-void JSONObject::put(const std::string &key, const std::variant<int, double, long, bool, std::string> &r) {
+void JSONObject::put(const std::string &key, const std::variant<int, double, long, long long, bool, std::string> &r) {
     Value v(r);
     object[key] = v;
 }

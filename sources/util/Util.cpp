@@ -118,24 +118,30 @@ std::vector<std::string_view> Util::splitStringViewBy(std::string_view strView, 
 
 bool Util::isInteger(std::string_view str)
 {
-    if (str.empty())
-        return false;
-    size_t startPos = 0;
-    if (str[0] == '+' || str[0] == '-')
-        startPos = 1;
-    if (str.size() >= 10 && isLong(str) && toLong(str) > 2147483647)
-        return false;
-    if (startPos == str.size())
-        return false; // string is only "+" or "-"
+    std::regex pattern("^-?\\d+$");
 
-    return std::all_of(str.begin() + startPos, str.end(), ::isdigit);
+    if (std::regex_match(str.begin(), str.end(), pattern) && str.size() <= 10) {
+        return true;
+    } else {
+        return false;
+    }
 }
 
 bool Util::isLong(std::string_view str)
 {
     std::regex pattern("^-?\\d+$");
 
-    if (std::regex_match(str.begin(), str.end(), pattern)) {
+    if (std::regex_match(str.begin(), str.end(), pattern) && str.size() <= 10) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool Util::isLongLong(std::string_view str) {
+    std::regex pattern("^-?\\d+$");
+
+    if (std::regex_match(str.begin(), str.end(), pattern) && str.size() <= 20) {
         return true;
     } else {
         return false;
@@ -205,12 +211,24 @@ std::string_view Util::trimQuotes(std::string_view str) {
     return str.substr(start, end - start);
 }
 
+std::string sanitizeNumericString(std::string_view value) {
+    std::string sanitized;
+    for (char ch : value) {
+        if (std::isdigit(ch) || ch == '-') { // Include '-' for negative numbers
+            sanitized += ch;
+        }
+    }
+    return sanitized;
+}
+
 int Util::toInteger(std::string_view value)
 {
+    std::string sanitized = sanitizeNumericString(value);
     int intValue;
-    auto [ptr, ec] = std::from_chars(value.data(), value.data() + value.size(), intValue);
+    auto [ptr, ec] = std::from_chars(sanitized.data(), sanitized.data() + sanitized.size(), intValue);
     if (ec != std::errc())
     {
+        std::cerr << "Failed to convert: " << value << std::endl;
         throw std::runtime_error("Conversion to int failed");
     }
     return intValue;
@@ -218,11 +236,22 @@ int Util::toInteger(std::string_view value)
 
 long Util::toLong(std::string_view value)
 {
+    std::string sanitized = sanitizeNumericString(value);
     long longValue;
+    auto [ptr, ec] = std::from_chars(sanitized.data(), sanitized.data() + sanitized.size(), longValue);
+    if (ec != std::errc()) {
+        std::cerr << "Failed to convert: " << value << std::endl;
+        throw std::runtime_error("Conversion to long failed");
+    }
+    return longValue;
+}
+
+long long Util::toLongLong(std::string_view value) {
+    long long longValue;
     auto [ptr, ec] = std::from_chars(value.data(), value.data() + value.size(), longValue);
-    if (ec != std::errc())
-    {
-        throw std::runtime_error("Conversion to int failed");
+    if (ec != std::errc()) {
+        std::cerr << "Failed to convert: " << value << std::endl;
+        throw std::runtime_error("Conversion to long long failed");
     }
     return longValue;
 }

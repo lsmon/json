@@ -102,6 +102,10 @@ JSONObject Parser::parseObject(std::string_view jsonView)
                         {
                             jsonObj.put(std::string(key), toLong(value));
                         }
+                        else if (isLongLong(value))
+                        {
+                            jsonObj.put(std::string(key), toLongLong(value));
+                        }
                         else if (isDouble(value))
                         {
                             jsonObj.put(std::string(key), toDouble(value));

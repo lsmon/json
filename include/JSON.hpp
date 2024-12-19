@@ -20,12 +20,12 @@ class JSONArray;
 
 class Value : public Util {
 private:
-    std::variant<int, double, long, bool, std::string, std::shared_ptr<JSONObject>, std::shared_ptr<JSONArray>> record;
+    std::variant<int, double, long, long long, bool, std::string, std::shared_ptr<JSONObject>, std::shared_ptr<JSONArray>> record;
 
 public:
     Value();
 
-    explicit Value(const std::variant<int, double, long, bool, std::string> & value);
+    explicit Value(const std::variant<int, double, long, long long, bool, std::string> & value);
 
     explicit Value(const std::shared_ptr<JSONObject>& jsonObject);
 
@@ -35,9 +35,9 @@ public:
 
     template<class C> [[nodiscard]] bool isObject() const;
 
-    void set(const std::variant<int, double, long, bool, std::string, std::shared_ptr<JSONObject>, std::shared_ptr<JSONArray>>& r);
+    void set(const std::variant<int, double, long, long long, bool, std::string, std::shared_ptr<JSONObject>, std::shared_ptr<JSONArray>>& r);
 
-    std::variant<int, double, long, bool, std::string, std::shared_ptr<JSONObject>, std::shared_ptr<JSONArray>> get() const;
+    std::variant<int, double, long, long long, bool, std::string, std::shared_ptr<JSONObject>, std::shared_ptr<JSONArray>> get() const;
 
     std::string str() const;
 
@@ -45,7 +45,7 @@ public:
 
     std::string dump(const int &indentSz = 0, const int &currentSz=0) const;
 
-    Value operator=(const std::variant<int, double, long, bool, std::string, std::shared_ptr<JSONObject>, std::shared_ptr<JSONArray>>& r);
+    Value operator=(const std::variant<int, double, long, long long, bool, std::string, std::shared_ptr<JSONObject>, std::shared_ptr<JSONArray>>& r);
 
     friend std::ostream& operator<<(std::ostream& os, const Value& value);
 };
@@ -93,7 +93,7 @@ public:
 
     void put(const std::string &key, const char *r);
 
-    void put(const std::string& key, const std::variant<int, double, long, bool, std::string> & r);
+    void put(const std::string& key, const std::variant<int, double, long, long long, bool, std::string> & r);
 
     std::vector<std::string> keys() const;
 

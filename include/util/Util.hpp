@@ -37,6 +37,8 @@ public:
 
     static bool isLong(std::string_view str);
 
+    static bool isLongLong(std::string_view str);
+
     static bool isDouble(std::string_view str);
 
     static bool isBoolean(std::string_view str);
@@ -49,7 +51,9 @@ public:
 
     static double toDouble(std::string_view value);
 
-    static long toLong(std::string_view str);
+    static long toLong(std::string_view value);
+
+    static long long toLongLong(std::string_view value);
 
     static bool validate(std::string_view jsonString);
 };
