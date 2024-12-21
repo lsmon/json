@@ -2,6 +2,7 @@
 // Created by alcacruz on 5/24/24.
 //
 #include "JSON.hpp"
+#include <algorithm>
 
 Value::Value() : record(std::string()) {}
 
@@ -120,8 +121,12 @@ void JSONArray::add(const Value &value) {
     values.push_back(value);
 }
 
-void JSONArray::add(const std::string &value) {
+void JSONArray::add(const std::variant<int, double, long, long long, bool, std::string> &value) {
     values.emplace_back(value);
+}
+
+void JSONArray::add(const std::shared_ptr<JSONObject> &jsonObject) {
+    values.emplace_back(jsonObject);
 }
 
 std::string JSONArray::str() const {
@@ -137,6 +142,38 @@ std::string JSONArray::str() const {
     }
     ss << "]";
     return ss.str();
+}
+
+void JSONArray::sortBy(const std::string &key, const bool &asc) {
+    if (asc) {
+        std::sort(values.begin(), values.end(), [&key](const Value &a, const Value &b) {
+            if (a.is<std::shared_ptr<JSONObject>>() && b.is<std::shared_ptr<JSONObject>>()) {
+                auto objA = std::get<std::shared_ptr<JSONObject>>(a.get());
+                auto objB = std::get<std::shared_ptr<JSONObject>>(b.get());
+
+                if (objA->get().count(key) && objB->get().count(key)) {
+                    auto valA = objA->operator[](key);
+                    auto valB = objB->operator[](key);
+                    return valA.c_str() < valB.c_str(); // Adjust comparison for data type
+                }
+            }
+            return false; // Default to no swapping if key is not found
+        });
+    } else {
+        std::sort(values.begin(), values.end(), [&key](const Value &a, const Value &b) {
+            if (a.is<std::shared_ptr<JSONObject>>() && b.is<std::shared_ptr<JSONObject>>()) {
+                auto objA = std::get<std::shared_ptr<JSONObject>>(a.get());
+                auto objB = std::get<std::shared_ptr<JSONObject>>(b.get());
+
+                if (objA->get().count(key) && objB->get().count(key)) {
+                    auto valA = objA->operator[](key);
+                    auto valB = objB->operator[](key);
+                    return valA.c_str() > valB.c_str(); // Adjust comparison for data type
+                }
+            }
+            return false; // Default to no swapping if key is not found
+        });
+    }
 }
 
 JSONArray JSONArray::operator=(const Value &v) {
@@ -156,7 +193,7 @@ std::string JSONArray::dump(const int &indentSz, const int &currentSz) const {
     std::string indent(currentSz, ' ');                // Current indentation
     std::string innerIndent(currentSz + indentSz, ' '); // Next level indentation
     std::stringstream ss;
-    ss << "[\n";
+    ss << "\n" << indent << "[\n";
     bool first = true;
     for (const auto &value : values) {
         if (!first) {
@@ -240,7 +277,7 @@ std::string JSONObject::dump(const int &indentSz, const int &currentSz) const {
     std::string innerIndent(currentSz + indentSz, ' '); // Next level indentation
 
     std::stringstream ss;
-    ss << "{\n";
+    ss << "\n" << indent << "{\n";
 
     bool first = true;
     for (const auto &[key, value] : object) {

@@ -8,8 +8,12 @@
 
 JSONArray Parser::parseArray(std::string_view jsonString)
 {
-    if (!Util::validate(jsonString)) {
-        throw std::runtime_error("json string square braces not balanced");
+    try {
+        if (!Util::validate(jsonString)) {
+            throw std::runtime_error("json string square braces not balanced");
+        }
+    } catch (std::runtime_error &ex) {
+        throw std::runtime_error(ex.what());
     }
     if (jsonString.empty()) {
         throw std::runtime_error("json string is empty");

@@ -10,41 +10,64 @@
 #include "JSON.hpp"
 #include "util/Parser.hpp"
 
+#include <iostream>
+#include <string_view>
+
 bool Util::validate(const std::string_view jsonString)
 {
     std::stack<char> brackets;
-    for (auto c : jsonString)
+    bool inString = false;
+
+    for (size_t i = 0; i < jsonString.size(); ++i)
     {
-        switch (c)
+        char c = jsonString[i];
+
+        // Toggle inString flag for quotes
+        if (c == '"' && (i == 0 || jsonString[i - 1] != '\\'))
         {
-            case '(':
-            case '[':
-            case '{':
-                brackets.push(c);
-                break;
-            case ')':
-                if (brackets.top() == '(')
-                    brackets.pop();
-                else
-                    return false;
-                break;
-            case ']':
-                if (brackets.top() == '[')
-                    brackets.pop();
-                else
-                    return false;
-                break;
-            case '}':
-                if (brackets.top() == '{')
-                    brackets.pop();
-                else
-                    return false;
-                break;
-            default:
-                break;
+            inString = !inString;
+            continue;
+        }
+
+        // Skip everything inside strings
+        if (inString)
+            continue;
+
+        // Push opening brackets onto the stack
+        if (c == '(' || c == '[' || c == '{')
+        {
+            brackets.push(c);
+        }
+        else if (c == ')' || c == ']' || c == '}') // Handle closing brackets
+        {
+            if (brackets.empty())
+            {
+                std::string what = "Error: Closing " + std::to_string(c) + " at position " + std::to_string(i) + " with an empty stack\n";
+                return false;
+            }
+
+            char top = brackets.top();
+            if ((c == ')' && top == '(') || (c == ']' && top == '[') || (c == '}' && top == '{'))
+            {
+                brackets.pop();
+            }
+            else
+            {
+                std::string what = "Error: Closing " + std::to_string(c) + " does not match opening " + std::to_string(top) + " at position " + std::to_string(i);
+                throw std::runtime_error(what);
+                return false;
+            }
         }
     }
-    return brackets.empty();
+
+    // Check for unmatched opening brackets
+    if (!brackets.empty())
+    {
+        std::cout << "Error: Unmatched opening bracket(s) left in the stack\n";
+        return false;
+    }
+
+    return true;
 }
 
 Util::~Util() {}

@@ -63,11 +63,15 @@ public:
 
     void add(const Value& value);
 
-    void add(const std::string& value);
+    void add(const std::variant<int, double, long, long long, bool, std::string> & r);
+
+    void add(const std::shared_ptr<JSONObject> &jsonObject);
 
     std::string str() const override;
 
     std::string dump(const int &indentSz = 0, const int &currentSzz=0) const override;
+
+    void sortBy(const std::string &key, const bool &asc = true);
 
     std::vector<Value> get() const;
 
