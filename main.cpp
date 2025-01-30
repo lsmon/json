@@ -3,21 +3,21 @@
 int main() {
     // Example usage
     JSONArray innerArray1;
-    innerArray1.add(Value(1));
-    innerArray1.add(Value(2));
+    innerArray1.add(JSON(1));
+    innerArray1.add(JSON(2));
     JSONArray innerArray2;
-    innerArray2.add(Value(3));
-    innerArray2.add(Value(4));
+    innerArray2.add(JSON(3));
+    innerArray2.add(JSON(4));
 
     JSONArray jsonArray;
-    jsonArray.add(Value(std::make_shared<JSONArray>(innerArray1)));
-    jsonArray.add(Value(std::make_shared<JSONArray>(innerArray2)));
+    jsonArray.add(JSON(std::make_shared<JSONArray>(innerArray1)));
+    jsonArray.add(JSON(std::make_shared<JSONArray>(innerArray2)));
 
     std::cout << "JSONArray: " << jsonArray.str() << std::endl;
 
     JSONObject jsonObject;
-    jsonObject.put("array1", Value(std::make_shared<JSONArray>(innerArray1)));
-    jsonObject.put("array2", Value(std::make_shared<JSONArray>(innerArray2)));
+    jsonObject.put("array1", JSON(std::make_shared<JSONArray>(innerArray1)));
+    jsonObject.put("array2", JSON(std::make_shared<JSONArray>(innerArray2)));
     jsonObject.put("int", 10);
     jsonObject.put("double", 1.0134);
     jsonObject.put("bool", true);

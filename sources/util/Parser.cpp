@@ -31,20 +31,20 @@ JSONArray Parser::parseArray(std::string_view jsonString)
         s = Util::trim(s);
         if (s.empty()) continue;
         if (s[0] == '{') {
-            jsonArray.add(Value(std::make_shared<JSONObject>(parseObject(s))));
+            jsonArray.add(JSON(std::make_shared<JSONObject>(parseObject(s))));
         } else if (s[0] == '[') {
-            jsonArray.add(Value(std::make_shared<JSONArray>(parseArray(s))));
+            jsonArray.add(JSON(std::make_shared<JSONArray>(parseArray(s))));
         } else {
             if (Util::isBoolean(s)) {
-                jsonArray.add(Value(s == "true" || s == "True"));
+                jsonArray.add(JSON(s == "true" || s == "True"));
             } else if (Util::isInteger(s)) {
-                jsonArray.add(Value(Util::toInteger(s)));
+                jsonArray.add(JSON(Util::toInteger(s)));
             } else if (Util::isLong(s)) {
-                jsonArray.add(Value(Util::toLong(s)));
+                jsonArray.add(JSON(Util::toLong(s)));
             } else if (Util::isDouble(s)) {
-                jsonArray.add(Value(Util::toDouble(s)));
+                jsonArray.add(JSON(Util::toDouble(s)));
             } else {
-                jsonArray.add(Value(std::string(s)));
+                jsonArray.add(JSON(std::string(s)));
             }
         }
     }
@@ -84,11 +84,11 @@ JSONObject Parser::parseObject(std::string_view jsonView)
                     std::string_view value = trimQuotes(trim(obj.substr(obj.find_first_of(':') + 1)));
                     if (value[0] == OCB)
                     {
-                        jsonObj.put(std::string(key), Value(std::make_shared<JSONObject>(parseObject(value))));
+                        jsonObj.put(std::string(key), JSON(std::make_shared<JSONObject>(parseObject(value))));
                     }
                     else if (value[0] == OSB)
                     {
-                        Value v(std::make_shared<JSONArray>(parseArray(value)));
+                        JSON v(std::make_shared<JSONArray>(parseArray(value)));
                         jsonObj.put(std::string(key), v);
                     }
                     else

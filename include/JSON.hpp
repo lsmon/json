@@ -18,18 +18,18 @@
 class JSONObject;
 class JSONArray;
 
-class Value : public Util {
+class JSON : public Util {
 private:
     std::variant<int, double, long, long long, bool, std::string, std::shared_ptr<JSONObject>, std::shared_ptr<JSONArray>> record;
 
 public:
-    Value();
+    JSON();
 
-    explicit Value(const std::variant<int, double, long, long long, bool, std::string> & value);
+    explicit JSON(const std::variant<int, double, long, long long, bool, std::string> & value);
 
-    explicit Value(const std::shared_ptr<JSONObject>& jsonObject);
+    explicit JSON(const std::shared_ptr<JSONObject>& jsonObject);
 
-    explicit Value(const std::shared_ptr<JSONArray>& jsonArray);
+    explicit JSON(const std::shared_ptr<JSONArray>& jsonArray);
 
     template<typename T> [[nodiscard]] bool is() const;
 
@@ -45,14 +45,14 @@ public:
 
     std::string dump(const int &indentSz = 0, const int &currentSz=0) const;
 
-    Value operator=(const std::variant<int, double, long, long long, bool, std::string, std::shared_ptr<JSONObject>, std::shared_ptr<JSONArray>>& r);
+    JSON operator=(const std::variant<int, double, long, long long, bool, std::string, std::shared_ptr<JSONObject>, std::shared_ptr<JSONArray>>& r);
 
-    friend std::ostream& operator<<(std::ostream& os, const Value& value);
+    friend std::ostream& operator<<(std::ostream& os, const JSON& value);
 };
 
-class JSONArray : public Util {
+class JSONArray : public JSON {
 private:
-    std::vector<Value> values;
+    std::vector<JSON> values;
 
 public:
     JSONArray() = default;
@@ -61,7 +61,7 @@ public:
 
     size_t size();
 
-    void add(const Value& value);
+    void add(const JSON& value);
 
     void add(const std::variant<int, double, long, long long, bool, std::string> & r);
 
@@ -73,27 +73,27 @@ public:
 
     void sortBy(const std::string &key, const bool &asc = true);
 
-    std::vector<Value> get() const;
+    std::vector<JSON> get() const;
 
-    JSONArray operator=(const Value& v);
+    JSONArray operator=(const JSON& v);
 
-    Value& operator[](std::size_t index);
+    JSON& operator[](std::size_t index);
 
-    const Value& operator[](std::size_t index) const;
+    const JSON& operator[](std::size_t index) const;
 };
 
-class JSONObject : public Util {
+class JSONObject : public JSON {
 private:
-    std::unordered_map<std::string, Value> object;
+    std::unordered_map<std::string, JSON> object;
 
 public:
     JSONObject() = default;
 
     JSONObject(const std::string &jsonString);
 
-    const std::unordered_map<std::string, Value> &get() const;
+    const std::unordered_map<std::string, JSON> &get() const;
 
-    void put(const std::string& key, const Value& value);
+    void put(const std::string& key, const JSON& value);
 
     void put(const std::string &key, const char *r);
 
@@ -103,9 +103,9 @@ public:
 
     std::string str() const override;
 
-    std::string dump(const int &indentSz = 0, const int &currentSz = 0) const;
+    std::string dump(const int &indentSz = 0, const int &currentSz = 0) const override; 
 
-    Value& operator[](const std::string& key);
+    JSON& operator[](const std::string& key);
 };
 
 
