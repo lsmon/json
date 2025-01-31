@@ -25,7 +25,7 @@ private:
 public:
     JSON();
 
-    explicit JSON(const std::variant<int, double, long, long long, bool, std::string> & value);
+    explicit JSON(const std::variant<int, double, long, long long, bool, std::string, std::shared_ptr<JSONObject>, std::shared_ptr<JSONArray>> & value);
 
     explicit JSON(const std::shared_ptr<JSONObject>& jsonObject);
 
@@ -63,7 +63,7 @@ public:
 
     void add(const JSON& value);
 
-    void add(const std::variant<int, double, long, long long, bool, std::string> & r);
+    void add(const std::variant<int, double, long, long long, bool, std::string, std::shared_ptr<JSONObject>, std::shared_ptr<JSONArray>> & r);
 
     void add(const std::shared_ptr<JSONObject> &jsonObject);
 
@@ -97,7 +97,7 @@ public:
 
     void put(const std::string &key, const char *r);
 
-    void put(const std::string& key, const std::variant<int, double, long, long long, bool, std::string> & r);
+    void put(const std::string& key, const std::variant<int, double, long, long long, bool, std::string, std::shared_ptr<JSONObject>, std::shared_ptr<JSONArray>> & r);
 
     std::vector<std::string> keys() const;
 

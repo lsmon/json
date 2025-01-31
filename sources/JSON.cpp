@@ -6,7 +6,7 @@
 
 JSON::JSON() : record(std::string()) {}
 
-JSON::JSON(const std::variant<int, double, long, long long, bool, std::string> &value)  {
+JSON::JSON(const std::variant<int, double, long, long long, bool, std::string, std::shared_ptr<JSONObject>, std::shared_ptr<JSONArray>> &value)  {
     set((const std::variant<int, double, long, long long, bool, std::string, std::shared_ptr<JSONObject>, std::shared_ptr<JSONArray>> &) value);
 }
 
@@ -120,7 +120,7 @@ void JSONArray::add(const JSON &value) {
     values.push_back(value);
 }
 
-void JSONArray::add(const std::variant<int, double, long, long long, bool, std::string> &value) {
+void JSONArray::add(const std::variant<int, double, long, long long, bool, std::string, std::shared_ptr<JSONObject>, std::shared_ptr<JSONArray>> &value) {
     values.emplace_back(value);
 }
 
@@ -228,7 +228,7 @@ void JSONObject::put(const std::string &key, const JSON &value) {
     object[key] = value;
 }
 
-void JSONObject::put(const std::string &key, const std::variant<int, double, long, long long, bool, std::string> &r) {
+void JSONObject::put(const std::string &key, const std::variant<int, double, long, long long, bool, std::string, std::shared_ptr<JSONObject>, std::shared_ptr<JSONArray>> &r) {
     JSON v(r);
     object[key] = v;
 }
