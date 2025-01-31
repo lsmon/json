@@ -260,6 +260,18 @@ JSONObject::JSONObject(const std::string &jsonString) {
     }
 }
 
+JSONObject::JSONObject(const JSON &json)
+{
+    if (json.isObject<JSONObject>())
+    {
+        *this = *std::get<std::shared_ptr<JSONObject>>(json.get());
+    }
+    else
+    {
+        throw std::runtime_error("JSON object is not a JSONObject");
+    }
+}
+
 void JSONObject::put(const std::string &key, const JSON &value) {
     object[key] = value;
 }

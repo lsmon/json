@@ -97,6 +97,8 @@ public:
 
     JSONObject(const std::string &jsonString);
 
+    JSONObject(const JSON& json);
+
     const std::unordered_map<std::string, JSON> &get() const;
 
     void put(const std::string& key, const JSON& value);
