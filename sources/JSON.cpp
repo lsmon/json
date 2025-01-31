@@ -100,7 +100,22 @@ std::string JSON::dump(const int &indentSz, const int &currentSz) const {
 
 bool JSON::equals(const JSON &other) const
 {
-    return this->record == other.record;
+    if (std::holds_alternative<int>(record))
+        return std::get<int>(record) == std::get<int>(other.record);
+    else if (std::holds_alternative<long>(record))
+        return std::get<long>(record) == std::get<long>(other.record);
+    else if (std::holds_alternative<double>(record))
+        return std::get<double>(record) == std::get<double>(other.record);
+    else if (std::holds_alternative<bool>(record))
+        return std::get<bool>(record) == std::get<bool>(other.record);
+    else if (std::holds_alternative<std::string>(record))
+        return std::get<std::string>(record) == std::get<std::string>(other.record);
+    else if (std::holds_alternative<std::shared_ptr<JSONObject>>(record))
+        return std::get<std::shared_ptr<JSONObject>>(record)->equals(*std::get<std::shared_ptr<JSONObject>>(other.record));
+    else if (std::holds_alternative<std::shared_ptr<JSONArray>>(record))
+        return std::get<std::shared_ptr<JSONArray>>(record)->equals(*std::get<std::shared_ptr<JSONArray>>(other.record));
+    else
+        return false;
 }
 
 JSONArray::JSONArray(const std::string &jsonString) {
