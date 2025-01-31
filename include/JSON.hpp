@@ -45,6 +45,8 @@ public:
 
     std::string dump(const int &indentSz = 0, const int &currentSz=0) const;
 
+    bool equals(const JSON &other) const;
+
     JSON operator=(const std::variant<int, double, long, long long, bool, std::string, std::shared_ptr<JSONObject>, std::shared_ptr<JSONArray>>& r);
 
     friend std::ostream& operator<<(std::ostream& os, const JSON& value);
@@ -70,6 +72,10 @@ public:
     std::string str() const override;
 
     std::string dump(const int &indentSz = 0, const int &currentSzz=0) const override;
+
+    bool contains(const JSON& value) const;
+
+    bool contains(const std::variant<int, double, long, long long, bool, std::string, std::shared_ptr<JSONObject>, std::shared_ptr<JSONArray>>& value) const;
 
     void sortBy(const std::string &key, const bool &asc = true);
 
@@ -100,6 +106,8 @@ public:
     void put(const std::string& key, const std::variant<int, double, long, long long, bool, std::string, std::shared_ptr<JSONObject>, std::shared_ptr<JSONArray>> & r);
 
     std::vector<std::string> keys() const;
+
+    bool contains(const std::string& key) const;
 
     std::string str() const override;
 

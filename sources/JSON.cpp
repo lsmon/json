@@ -98,6 +98,10 @@ std::string JSON::dump(const int &indentSz, const int &currentSz) const {
     return ss.str();
 }
 
+bool JSON::equals(const JSON &other) const
+{
+    return this->record == other.record;
+}
 
 JSONArray::JSONArray(const std::string &jsonString) {
     auto parsed = Util::parse(jsonString);
@@ -192,7 +196,7 @@ std::string JSONArray::dump(const int &indentSz, const int &currentSz) const {
     std::string indent(currentSz, ' ');                // Current indentation
     std::string innerIndent(currentSz + indentSz, ' '); // Next level indentation
     std::stringstream ss;
-    ss << "\n" << indent << "[\n";
+    ss << indent << "[\n";
     bool first = true;
     for (const auto &value : values) {
         if (!first) {
@@ -206,8 +210,25 @@ std::string JSONArray::dump(const int &indentSz, const int &currentSz) const {
         }
         first = false;
     }
-    ss << "\n" << indent << "]";
+    ss << "\n" << indent << "]\n";
     return ss.str();
+}
+
+bool JSONArray::contains(const JSON &value) const
+{
+    for (const auto &val : values)
+    {
+        if (val.equals(value))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool JSONArray::contains(const std::variant<int, double, long, long long, bool, std::string, std::shared_ptr<JSONObject>, std::shared_ptr<JSONArray>> &value) const
+{
+    return contains(JSON(value));
 }
 
 std::vector<JSON> JSONArray::get() const {
@@ -246,6 +267,11 @@ std::vector<std::string> JSONObject::keys() const
         keys.emplace_back(pair.first);
     }
     return keys;
+}
+
+bool JSONObject::contains(const std::string &key) const
+{
+    return object.count(key) > 0;
 }
 
 std::string JSONObject::str() const {
