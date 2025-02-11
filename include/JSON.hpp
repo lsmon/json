@@ -111,6 +111,8 @@ public:
 
     std::vector<std::string> keys() const;
 
+    JSON get(const std::string& key) const;
+
     bool contains(const std::string& key) const;
 
     std::string str() const override;

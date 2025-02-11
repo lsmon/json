@@ -303,6 +303,15 @@ std::vector<std::string> JSONObject::keys() const
     return keys;
 }
 
+JSON JSONObject::get(const std::string& key) const
+{
+    auto it = object.find(key);
+    if (it != object.end())
+        return it->second;
+
+    return JSON();
+}
+
 bool JSONObject::contains(const std::string &key) const
 {
     return object.count(key) > 0;
