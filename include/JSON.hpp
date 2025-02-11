@@ -49,6 +49,8 @@ public:
 
     JSON operator=(const std::variant<int, double, long, long long, bool, std::string, std::shared_ptr<JSONObject>, std::shared_ptr<JSONArray>>& r);
 
+    bool operator==(const JSON& other) const;
+
     friend std::ostream& operator<<(std::ostream& os, const JSON& value);
 };
 

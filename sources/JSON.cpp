@@ -118,6 +118,10 @@ bool JSON::equals(const JSON &other) const
         return false;
 }
 
+bool JSON::operator==(const JSON &other) const {
+    return record == other.record;
+}
+
 JSONArray::JSONArray(const std::string &jsonString) {
     auto parsed = Util::parse(jsonString);
     if (parsed)
@@ -233,7 +237,7 @@ bool JSONArray::contains(const JSON &value) const
 {
     for (const auto &val : values)
     {
-        if (val.equals(value))
+        if (val.str() == value.str())
         {
             return true;
         }
@@ -243,7 +247,10 @@ bool JSONArray::contains(const JSON &value) const
 
 bool JSONArray::contains(const std::variant<int, double, long, long long, bool, std::string, std::shared_ptr<JSONObject>, std::shared_ptr<JSONArray>> &value) const
 {
-    return contains(JSON(value));
+    for (const auto &item: values) {
+        if (item.str() == JSON(value).str()) return true;
+    }
+    return false;
 }
 
 std::vector<JSON> JSONArray::get() const {

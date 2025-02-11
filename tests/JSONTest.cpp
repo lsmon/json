@@ -154,8 +154,15 @@ void handleArguments(const std::string_view &arg)
     }
 }
 
+void testArrayContainsValue() {
+    std::shared_ptr<JSONArray> array = std::make_shared<JSONArray>((R"([{"uuid":"443d13c7-b3a6-4615-ac5b-a95fcff3a194","content":null,"submittedOn":1721211615.19775,"editedOn":1730255151.58142,"title":"Maliyah","description":"Still Original","thumbnail":"https://d389r9jlxhr8vr.cloudfront.net/54dd6552-ca0f-00f7-421c-0000f143d280_4.jpg","source":"https://d3ga32u0n55a5j.cloudfront.net/entries/54dd6552-ca0f-00f7-421c-0000f143d280_3.mp4","group":"54dd6552-ca0f-00f7-421c-0000f143d280","placement":3,"parent":"8c857356-0e84-412a-99c3-6fb621b1136b","author":"61b6a8ec-f7d6-4bab-af2a-0d87ed5f3662"},{"uuid":"a8c079df-ba29-4105-b788-311ec70a30f3","content":null,"submittedOn":1721212210.85975,"editedOn":1730255008.78332,"title":"Jeorgia","description":"Original Name","thumbnail":"https://d389r9jlxhr8vr.cloudfront.net/54dd6552-ca0f-00f7-421c-0000f143d280_2.jpg","source":"https://d3ga32u0n55a5j.cloudfront.net/entries/54dd6552-ca0f-00f7-421c-0000f143d280_1.mp4","group":"54dd6552-ca0f-00f7-421c-0000f143d280","placement":1,"parent":"8c857356-0e84-412a-99c3-6fb621b1136b","author":"61b6a8ec-f7d6-4bab-af2a-0d87ed5f3662"},{"uuid":"a2dbc509-b303-4f8c-9669-e65b21868bb7","content":null,"submittedOn":1721210882.38487,"editedOn":1730255082.96664,"title":"chezka!","description":"Original music","thumbnail":"https://d389r9jlxhr8vr.cloudfront.net/54dd6552-ca0f-00f7-421c-0000f143d280_3.jpg","source":"https://d3ga32u0n55a5j.cloudfront.net/entries/54dd6552-ca0f-00f7-421c-0000f143d280_2.mp4","group":"54dd6552-ca0f-00f7-421c-0000f143d280","placement":2,"parent":"8c857356-0e84-412a-99c3-6fb621b1136b","author":"61b6a8ec-f7d6-4bab-af2a-0d87ed5f3662"},{"uuid":"a37405d8-77b0-436c-b448-23c576da105a","content":null,"submittedOn":1721212268.46609,"editedOn":1730254927.65104,"title":"Cam","description":"Original Search","thumbnail":"https://d389r9jlxhr8vr.cloudfront.net/54dd6552-ca0f-00f7-421c-0000f143d280_1.jpg","source":"https://d3ga32u0n55a5j.cloudfront.net/entries/54dd6552-ca0f-00f7-421c-0000f143d280_0.mp4","group":"54dd6552-ca0f-00f7-421c-0000f143d280","placement":0,"parent":"8c857356-0e84-412a-99c3-6fb621b1136b","author":"61b6a8ec-f7d6-4bab-af2a-0d87ed5f3662"}])"));
+    std::shared_ptr<JSONObject> valueToSearch = std::make_shared<JSONObject>(R"({"uuid": "a37405d8-77b0-436c-b448-23c576da105a","content": null,"submittedOn": 1721212268.46609,"editedOn": 1730254927.65104,"title": "Cam","description": "Original Search","thumbnail": "https://d389r9jlxhr8vr.cloudfront.net/54dd6552-ca0f-00f7-421c-0000f143d280_1.jpg","source": "https://d3ga32u0n55a5j.cloudfront.net/entries/54dd6552-ca0f-00f7-421c-0000f143d280_0.mp4","group": "54dd6552-ca0f-00f7-421c-0000f143d280","placement": 0,"parent": "8c857356-0e84-412a-99c3-6fb621b1136b","author": "61b6a8ec-f7d6-4bab-af2a-0d87ed5f3662"})");
+    std::cout << (array->contains(valueToSearch)?"EXISTS":"DO NOT EXISTS") << std::endl;
+}
+
 int main(int argc, char **argv)
 {
+    testArrayContainsValue();
     std::vector<std::string_view> args(argv + 1, argv + argc);
 
     if (argc == 1)
