@@ -257,6 +257,15 @@ std::vector<JSON> JSONArray::get() const {
     return values;
 }
 
+bool JSONArray::remove(size_t index) {
+    auto iterator = values.begin() + index; // Create an iterator at the given index
+    if (iterator != values.end()) {
+        values.erase(iterator);
+        return true;
+    }
+    return false;
+}
+
 JSONObject::JSONObject(const std::string &jsonString) {
     auto parsed = Util::parse(jsonString);
     if (parsed) {
@@ -364,4 +373,11 @@ std::string JSONObject::dump(const int &indentSz, const int &currentSz) const {
 
     ss << "\n" << indent << "}";
     return ss.str();
+}
+
+bool JSONObject::remove(const std::string &key) {
+    size_t beforeSz = object.size();
+    object.erase(key);
+    size_t afterSz = object.size();
+    return beforeSz!=afterSz;
 }

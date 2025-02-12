@@ -75,6 +75,8 @@ public:
 
     std::string dump(const int &indentSz = 0, const int &currentSzz=0) const override;
 
+    bool remove(size_t index);
+
     bool contains(const JSON& value) const;
 
     bool contains(const std::variant<int, double, long, long long, bool, std::string, std::shared_ptr<JSONObject>, std::shared_ptr<JSONArray>>& value) const;
@@ -114,6 +116,8 @@ public:
     JSON get(const std::string& key) const;
 
     bool contains(const std::string& key) const;
+
+    bool remove(const std::string& key);
 
     std::string str() const override;
 

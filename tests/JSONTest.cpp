@@ -187,5 +187,6 @@ int main(int argc, char **argv)
     std::shared_ptr<JSONArray> testArray = std::make_shared<JSONArray>(arrayStr);
     testArray->sortBy("total", false);
     std::cout << testArray->dump(4, false);
+
     return 0;
 }
